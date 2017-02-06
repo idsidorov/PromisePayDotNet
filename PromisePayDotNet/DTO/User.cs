@@ -45,5 +45,8 @@ namespace PromisePayDotNet.DTO
 
         [JsonProperty(PropertyName = "drivers_license")]
         public string DriversLicense { get; set; }
+        
+        [JsonProperty(PropertyName = "government_number")]
+        public string GovernmentNumber { get; set; }
     }
 }
