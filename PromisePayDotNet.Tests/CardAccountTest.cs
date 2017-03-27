@@ -22,7 +22,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void CreateCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/card_account_create.json");
+            var content = Files.ReadAllText("./Fixtures/card_account_create.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICardAccountRepository>(client.Object);
@@ -55,7 +55,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/card_account_get_by_id.json");
+            var content = Files.ReadAllText("./Fixtures/card_account_get_by_id.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICardAccountRepository>(client.Object);
@@ -75,7 +75,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserForCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/card_account_get_users.json");
+            var content = Files.ReadAllText("./Fixtures/card_account_get_users.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICardAccountRepository>(client.Object);
@@ -90,7 +90,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void DeleteCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/card_account_delete.json");
+            var content = Files.ReadAllText("./Fixtures/card_account_delete.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICardAccountRepository>(client.Object);

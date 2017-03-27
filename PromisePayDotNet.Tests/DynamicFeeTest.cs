@@ -26,7 +26,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void CreateFeeSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/fees_create.json");
+            var content = Files.ReadAllText("./Fixtures/fees_create.json");
             var client = GetMockClient(content);
 
             var repo = Get<IFeeRepository>(client.Object);
@@ -68,7 +68,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetFeeByIdSuccessfull()
         {
-            var content = File.ReadAllText("./Fixtures/fees_get_by_id.json");
+            var content = Files.ReadAllText("./Fixtures/fees_get_by_id.json");
             var client = GetMockClient(content);
 
             var repo = Get<IFeeRepository>(client.Object);
@@ -80,7 +80,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListFeeSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/fees_list.json");
+            var content = Files.ReadAllText("./Fixtures/fees_list.json");
             var client = GetMockClient(content);
 
             var repo = Get<IFeeRepository>(client.Object);

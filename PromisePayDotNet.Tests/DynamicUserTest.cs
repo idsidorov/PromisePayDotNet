@@ -27,7 +27,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void UserCreateSuccessful()
         {
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -60,7 +60,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ValidationErrorUserCreateMissedId()
         {
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -84,7 +84,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ValidationErrorUserCreateMissedFirstName()
         {
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -108,7 +108,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ValidationErrorUserCreateWrongCountry()
         {
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -132,7 +132,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ValidationErrorUserCreateWrongEmail()
         {
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -158,7 +158,7 @@ namespace PromisePayDotNet.Tests
         {
             var id = "ec9bf096-c505-4bef-87f6-18822b9dbf2c";
             //Then, list users
-            var content = File.ReadAllText("./Fixtures/users_list.json");
+            var content = Files.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -173,7 +173,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListUsersNegativeParams()
         {
-            var content = File.ReadAllText("./Fixtures/users_list.json");
+            var content = Files.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             Assert.Throws<ArgumentException>(() => repo.ListUsers(-10, -20));
@@ -182,7 +182,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListUsersTooHighLimit()
         {
-            var content = File.ReadAllText("./Fixtures/users_list.json");
+            var content = Files.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             Assert.Throws<ArgumentException>(() => repo.ListUsers(201));
@@ -193,7 +193,7 @@ namespace PromisePayDotNet.Tests
         public void GetUserSuccessful()
         {
             //First, create a user with known id
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -209,7 +209,7 @@ namespace PromisePayDotNet.Tests
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void GetUserMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/user_missing.json");
+            var content = Files.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
             var repo = Get<IUserRepository>(client.Object);
             var id = "asdfkjas;lkflaksndflaksndfklas";
@@ -228,7 +228,7 @@ namespace PromisePayDotNet.Tests
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void DeleteUserMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/user_missing.json");
+            var content = Files.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, System.Net.HttpStatusCode.NotFound);
             var repo = Get<IUserRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
@@ -240,7 +240,7 @@ namespace PromisePayDotNet.Tests
         public void EditUserSuccessful()
         {
             //First, create a user we'll work with
-            var content = File.ReadAllText("./Fixtures/user_create.json");
+            var content = Files.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
@@ -266,7 +266,7 @@ namespace PromisePayDotNet.Tests
             user.FirstName = "Test123";
             user.LastName = "Test123";
 
-            content = File.ReadAllText("./Fixtures/user_update.json");
+            content = Files.ReadAllText("./Fixtures/user_update.json");
             client = GetMockClient(content);
             repo = Get<IUserRepository>(client.Object);
             var modifiedUser = repo.UpdateUser(user);
@@ -278,7 +278,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void EditUserMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/user_missing.json");
+            var content = Files.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
             var repo = Get<IUserRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
@@ -312,7 +312,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListUserItemsSuccessful()
         {
-            var content = File.ReadAllText("./Fixtures/user_items.json");
+            var content = Files.ReadAllText("./Fixtures/user_items.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -329,7 +329,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListUserBankAccountsSuccessful()
         {
-            var content = File.ReadAllText("./Fixtures/user_bank_accounts.json");
+            var content = Files.ReadAllText("./Fixtures/user_bank_accounts.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -340,7 +340,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserCardAccountSuccessful()
         {
-            var content = File.ReadAllText("./Fixtures/user_card_accounts.json");
+            var content = Files.ReadAllText("./Fixtures/user_card_accounts.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -351,7 +351,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserPayPalAccountSuccessful()
         {
-            var content = File.ReadAllText("./Fixtures/user_paypal_accounts.json");
+            var content = Files.ReadAllText("./Fixtures/user_paypal_accounts.json");
             var client = GetMockClient(content);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -362,7 +362,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserBankAccountEmpty()
         {
-            var content = File.ReadAllText("./Fixtures/user_bank_accounts_empty.json");
+            var content = Files.ReadAllText("./Fixtures/user_bank_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -372,7 +372,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserCardAccountEmpty()
         {
-            var content = File.ReadAllText("./Fixtures/user_card_accounts_empty.json");
+            var content = Files.ReadAllText("./Fixtures/user_card_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
             var repo = Get<IUserRepository>(client.Object);
 
@@ -382,7 +382,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetUserPayPalAccountEmpty()
         {
-            var content = File.ReadAllText("./Fixtures/user_paypal_accounts_empty.json");
+            var content = Files.ReadAllText("./Fixtures/user_paypal_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
             var repo = Get<IUserRepository>(client.Object);
 

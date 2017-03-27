@@ -27,7 +27,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void CreateItemSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_create.json");
+            var content = Files.ReadAllText("./Fixtures/items_create.json");
 
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
@@ -55,7 +55,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListAllItemsSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_list.json");
+            var content = Files.ReadAllText("./Fixtures/items_list.json");
 
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
@@ -89,7 +89,7 @@ namespace PromisePayDotNet.Tests
         public void GetItemSuccessful()
         {
             //First, create a user with known id
-            var content = File.ReadAllText("./Fixtures/items_get_by_id.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_by_id.json");
 
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
@@ -105,7 +105,7 @@ namespace PromisePayDotNet.Tests
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void GetItemMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/items_not_found.json");
+            var content = Files.ReadAllText("./Fixtures/items_not_found.json");
             var response = new Mock<RestResponse>(MockBehavior.Strict);
             response.SetupGet(x => x.Content).Returns(content);
             response.SetupGet(x => x.ResponseUri).Returns(new Uri("http://google.com"));
@@ -125,7 +125,7 @@ namespace PromisePayDotNet.Tests
         public void DeleteItemSuccessful()
         {
             var id = "db3d95aa-2e35-4d87-95b4-5c9b41ba7346";
-            var content = File.ReadAllText("./Fixtures/items_delete.json");
+            var content = Files.ReadAllText("./Fixtures/items_delete.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             Assert.True(repo.DeleteItem(id));
@@ -136,7 +136,7 @@ namespace PromisePayDotNet.Tests
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void DeleteItemMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/items_delete_unsuccessful.json");
+            var content = Files.ReadAllText("./Fixtures/items_delete_unsuccessful.json");
             var response = new Mock<RestResponse>(MockBehavior.Strict);
             response.SetupGet(x => x.Content).Returns(content);
             response.SetupGet(x => x.ResponseUri).Returns(new Uri("http://google.com"));
@@ -156,7 +156,7 @@ namespace PromisePayDotNet.Tests
         public void EditItemSuccessful()
         {
             //First, create a item we'll work with
-            var content = File.ReadAllText("./Fixtures/items_edit.json");
+            var content = Files.ReadAllText("./Fixtures/items_edit.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
 
@@ -188,7 +188,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void EditItemMissingId()
         {
-            var content = File.ReadAllText("./Fixtures/items_edit_unsuccessful.json");
+            var content = Files.ReadAllText("./Fixtures/items_edit_unsuccessful.json");
             var response = new Mock<RestResponse>(MockBehavior.Strict);
             response.SetupGet(x => x.Content).Returns(content);
             response.SetupGet(x => x.ResponseUri).Returns(new Uri("http://google.com"));
@@ -221,7 +221,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListTransactionsForItem()
         {
-            var content = File.ReadAllText("./Fixtures/items_list_transactions.json");
+            var content = Files.ReadAllText("./Fixtures/items_list_transactions.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
 
@@ -232,7 +232,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetStatusForItem()
         {
-            var content = File.ReadAllText("./Fixtures/items_get_status.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_status.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             var status = repo.GetStatusForItem("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");
@@ -242,7 +242,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListFeesForItem()
         {
-            var content = File.ReadAllText("./Fixtures/items_list_fees.json");
+            var content = Files.ReadAllText("./Fixtures/items_list_fees.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             var fees = repo.ListFeesForItem("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");
@@ -252,7 +252,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetBuyerForItemSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_get_buyer.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_buyer.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             var buyer = repo.GetBuyerForItem("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");
@@ -262,7 +262,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetSellerForItemSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_get_seller.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_seller.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             var sellers = repo.GetSellerForItem("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");
@@ -272,7 +272,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetWireDetailsForItemSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_get_wire_details.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_wire_details.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
 
@@ -283,7 +283,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetBPayDetailsForItemSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/items_get_bpay_details.json");
+            var content = Files.ReadAllText("./Fixtures/items_get_bpay_details.json");
             var client = GetMockClient(content);
             var repo = Get<IItemRepository>(client.Object);
             var bPayDetails = repo.GetBPayDetailsForItem("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");

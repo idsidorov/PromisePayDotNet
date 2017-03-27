@@ -10,25 +10,24 @@ namespace PromisePayDotNet.Tests
 {
     public abstract class AbstractTest
     {
-        private static IServiceProvider CreateDi(IRestClient client=null)
+        private static IServiceProvider CreateDi(IRestClient client = null)
         {
             var services = new ServiceCollection();
             if (null != client)
             {
-                services.AddTransient(ci=>client);
+                services.AddTransient(ci => client);
             }
+            services.AddPromisePay(new PromisePaySettings
+            {
+                ApiUrl = "https://test.api.promisepay.com",
+                Login = "idsidorov@gmail.com",
+                Password = "mJrUGo2Vxuo9zqMVAvkw"
+            });
             services.AddOptions();
-            services.AddPromisePay(options);
             services.AddLogging();
             return services.BuildServiceProvider();
         }
 
-        private static PromisePaySettings options => new PromisePaySettings
-        {
-            ApiUrl = "https://test.api.promisepay.com",
-            Login = "idsidorov@gmail.com",
-            Password = "mJrUGo2Vxuo9zqMVAvkw"
-        };
 
         protected TRepo Get<TRepo>() => CreateDi().GetRequiredService<TRepo>();
         protected TRepo Get<TRepo>(IRestClient client) => CreateDi(client).GetRequiredService<TRepo>();

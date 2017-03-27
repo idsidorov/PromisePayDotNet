@@ -20,11 +20,12 @@ namespace PromisePayDotNet.Implementations
         protected IRestClient Client;
         public AbstractRepository(IRestClient client, ILogger logger, IOptions<PromisePaySettings> options)
         {
+            Configurataion = options.Value;
+            if (options.Value == null) throw new NullReferenceException(nameof(options.Value));
+            log = logger;
             this.Client = client;
             client.BaseUrl = new Uri(BaseUrl);
             client.Authenticator = new HttpBasicAuthenticator(Login, Password);
-            log = logger;
-            Configurataion = options.Value;
         }
 
         protected PromisePaySettings Configurataion { get; }

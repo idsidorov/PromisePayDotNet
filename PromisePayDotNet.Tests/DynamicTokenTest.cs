@@ -49,7 +49,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GenerateCardToken()
         {
-            var content = File.ReadAllText("./Fixtures/generate_card_token.json");
+            var content = Files.ReadAllText("./Fixtures/generate_card_token.json");
 
             var client = GetMockClient(content);
             var repo = Get<ITokenRepository>(client.Object);

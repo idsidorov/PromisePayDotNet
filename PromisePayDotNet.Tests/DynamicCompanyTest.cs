@@ -23,7 +23,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void ListCompaniesSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/companies_list.json");
+            var content = Files.ReadAllText("./Fixtures/companies_list.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICompanyRepository>(client.Object);
@@ -36,7 +36,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void GetCompanyByIdSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/companies_get_by_id.json");
+            var content = Files.ReadAllText("./Fixtures/companies_get_by_id.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICompanyRepository>(client.Object);
@@ -49,7 +49,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void CreateCompanySuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/companies_create.json");
+            var content = Files.ReadAllText("./Fixtures/companies_create.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICompanyRepository>(client.Object);
@@ -74,7 +74,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void EditCompanySuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/companies_edit.json");
+            var content = Files.ReadAllText("./Fixtures/companies_edit.json");
 
             var client = GetMockClient(content);
             var repo = Get<ICompanyRepository>(client.Object);

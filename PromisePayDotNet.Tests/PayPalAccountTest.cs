@@ -24,7 +24,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void CreatePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/paypal_account_create.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
             var repo = Get<IPayPalAccountRepository>(client.Object);
 
@@ -51,7 +51,7 @@ namespace PromisePayDotNet.Tests
         public void GetPayPalAccountSuccessfully()
         {
             var id = "cd2ab053-25e5-491a-a5ec-0c32dbe76efa";
-            var content = File.ReadAllText("./Fixtures/paypal_account_create.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
             var repo = Get<IPayPalAccountRepository>(client.Object);
 
@@ -75,7 +75,7 @@ namespace PromisePayDotNet.Tests
         {
             var id = "3a780d4a-5de0-409c-9587-080930ddea3c";
 
-            var content = File.ReadAllText("./Fixtures/paypal_account_get_users.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_get_users.json");
             var client = GetMockClient(content);
             var repo = Get<IPayPalAccountRepository>(client.Object);
 
@@ -91,7 +91,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void DeletePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("./Fixtures/paypal_account_delete.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_delete.json");
             var client = GetMockClient(content);
             var repo = Get<IPayPalAccountRepository>(client.Object);
 

@@ -23,7 +23,7 @@ namespace PromisePayDotNet.Tests
         public void ListTransactionsSuccessful()
         {
             //First, create a user, so we'll have at least one 
-            var content = File.ReadAllText("./Fixtures/transactions_list.json");
+            var content = Files.ReadAllText("./Fixtures/transactions_list.json");
             var client = GetMockClient(content);
             var repo = Get<ITransactionRepository>(client.Object);
             //Then, list users
