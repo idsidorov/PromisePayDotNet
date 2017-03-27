@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Net;
+using System.Net.Http;
+using System.Text;
 
 namespace PromisePayDotNet.Internals
 {
@@ -12,6 +13,12 @@ namespace PromisePayDotNet.Internals
         {
             this.login = login;
             this.password = password;
+        }
+
+        public void Add(HttpRequestMessage req)
+        {
+            var byteArray = Encoding.ASCII.GetBytes($"{login}:{password}");
+            req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
     }
 }

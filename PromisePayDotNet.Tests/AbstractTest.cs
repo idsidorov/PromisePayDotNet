@@ -5,6 +5,7 @@ using PromisePayDotNet.Internals;
 using PromisePayDotNet.Settings;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Tests
 {
@@ -52,7 +53,7 @@ namespace PromisePayDotNet.Tests
             var client = new Mock<IRestClient>(MockBehavior.Strict);
             client.SetupSet(x => x.BaseUrl = It.IsAny<Uri>());
             client.SetupSet(x => x.Authenticator = It.IsAny<IAuthenticator>());
-            client.Setup(x => x.Execute(It.IsAny<RestRequest>())).Returns(response.Object);
+            client.Setup(x => x.ExecuteAsync(It.IsAny<RestRequest>())).ReturnsAsync(response.Object);
             return client;
         }
 

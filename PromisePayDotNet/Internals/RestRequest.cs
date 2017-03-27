@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 
 namespace PromisePayDotNet.Internals
 {
@@ -7,13 +8,13 @@ namespace PromisePayDotNet.Internals
     {
         internal string url;
 
-        public RestRequest(string url, string method)
+        public RestRequest(string url, HttpMethod method)
         {
             this.url = url;
             this.Method = method;
         }
 
-        public string Method { get; }
+        public HttpMethod Method { get; }
 
         internal void AddUrlSegment(string name, string value)
         {

@@ -64,7 +64,7 @@ namespace PromisePayDotNet.Tests
                 City = string.Empty,
                 State = string.Empty,
                 Zip = string.Empty
-            }, string.Empty);
+            }, "234345");
             client.VerifyAll();
             Assert.NotNull(createdCompany);
             Assert.NotNull(createdCompany.Id);

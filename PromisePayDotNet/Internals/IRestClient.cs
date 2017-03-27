@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Internals
 {
@@ -8,6 +8,6 @@ namespace PromisePayDotNet.Internals
         Uri BaseUrl { get; set; }
         IAuthenticator Authenticator { get; set; }
 
-        RestResponse Execute(RestRequest request);
+        Task<RestResponse> ExecuteAsync(RestRequest request);
     }
 }

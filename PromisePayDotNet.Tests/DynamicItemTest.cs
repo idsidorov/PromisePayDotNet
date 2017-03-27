@@ -115,7 +115,7 @@ namespace PromisePayDotNet.Tests
             var client = new Mock<IRestClient>(MockBehavior.Strict);
             client.SetupSet(x => x.BaseUrl = It.IsAny<Uri>());
             client.SetupSet(x => x.Authenticator = It.IsAny<IAuthenticator>());
-            client.Setup(x => x.Execute(It.IsAny<RestRequest>())).Returns(response.Object);
+            client.Setup(x => x.ExecuteAsync(It.IsAny<RestRequest>())).ReturnsAsync(response.Object);
             var repo = Get<IItemRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
             Assert.Throws<UnauthorizedException>(() => repo.GetItemById(id));
@@ -146,7 +146,7 @@ namespace PromisePayDotNet.Tests
             var client = new Mock<IRestClient>(MockBehavior.Strict);
             client.SetupSet(x => x.BaseUrl = It.IsAny<Uri>());
             client.SetupSet(x => x.Authenticator = It.IsAny<IAuthenticator>());
-            client.Setup(x => x.Execute(It.IsAny<RestRequest>())).Returns(response.Object);
+            client.Setup(x => x.ExecuteAsync(It.IsAny<RestRequest>())).ReturnsAsync(response.Object);
             var repo = Get<IItemRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
             Assert.Throws<UnauthorizedException>(() => repo.DeleteItem(id));
@@ -198,7 +198,7 @@ namespace PromisePayDotNet.Tests
             var client = new Mock<IRestClient>(MockBehavior.Strict);
             client.SetupSet(x => x.BaseUrl = It.IsAny<Uri>());
             client.SetupSet(x => x.Authenticator = It.IsAny<IAuthenticator>());
-            client.Setup(x => x.Execute(It.IsAny<RestRequest>())).Returns(response.Object);
+            client.Setup(x => x.ExecuteAsync(It.IsAny<RestRequest>())).ReturnsAsync(response.Object);
             var repo = Get<IItemRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
             var buyerId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before

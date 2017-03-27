@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Implementations
 {
@@ -72,10 +73,27 @@ namespace PromisePayDotNet.Implementations
                 return baseUrl;
             }
         }
-
+        [Obsolete("Use async!")]
         protected RestResponse SendRequest(IRestClient client, RestRequest request)
         {
-            var response = client.Execute(request);
+            try
+            {
+                return SendRequestAsync(client, request).Result;
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null && ex.InnerException is ApiErrorsException)
+                    throw ex.InnerException;
+                if (ex.InnerException != null && ex.InnerException is UnauthorizedException)
+                    throw ex.InnerException;
+                throw;
+            }
+            
+        }
+
+        protected async Task<RestResponse> SendRequestAsync(IRestClient client, RestRequest request)
+        {
+            var response = await client.ExecuteAsync(request);
 
             log.LogDebug(String.Format(
                     "Executed request to {0} with method {1}, got the following status: {2} and the body is {3}",

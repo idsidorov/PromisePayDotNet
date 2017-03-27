@@ -306,7 +306,7 @@ namespace PromisePayDotNet.Tests
         //[Ignore("Currently, this test returns 401")]
         public void SendMobilePinSuccessful()
         {
-            //throw new System.Exception();
+            throw new System.Exception();
         }
 
         [Fact]
@@ -323,7 +323,7 @@ namespace PromisePayDotNet.Tests
         //[Ignore("Not implemented yet")]
         public void ListUserDisbursementAccountsSuccessful()
         {
-            //throw new System.Exception();
+            throw new System.Exception();
         }
 
         [Fact]

@@ -20,7 +20,8 @@ namespace PromisePayDotNet.Implementations
         public BankAccount GetBankAccountById(string bankAccountId)
         {
             AssertIdNotNull(bankAccountId);
-            var request = new RestRequest("/bank_accounts/{id}", Method.GET);
+            var request = new 
+                RestRequest("/bank_accounts/{id}", Method.GET);
             request.AddUrlSegment("id", bankAccountId);
             var response = SendRequest(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, BankAccount>>(response.Content).Values.First();

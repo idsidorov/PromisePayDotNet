@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 
 namespace PromisePayDotNet.Internals
 {
-    public class Method
+    internal class Method
     {
-        public const string GET = "GET";
-        public const string POST = "POST";
-        public const string PUT = "PUT";
-        public const string PATCH = "PATCH";
-        public const string DELETE = "DELETE";
+        public static HttpMethod GET = HttpMethod.Get;
+        public static HttpMethod POST = HttpMethod.Post;
+        public static HttpMethod PUT = HttpMethod.Put;
+        public static HttpMethod PATCH = new HttpMethod("PATCH");
+        public static HttpMethod DELETE = HttpMethod.Delete;
     }
 }
