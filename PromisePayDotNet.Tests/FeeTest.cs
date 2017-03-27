@@ -7,6 +7,7 @@ using PromisePayDotNet.Implementations;
 using System;
 using System.IO;
 using System.Linq;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
@@ -28,7 +29,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/fees_create.json");
             var client = GetMockClient(content);
 
-            var repo = Get<FeeRepository>(client.Object);
+            var repo = Get<IFeeRepository>(client.Object);
             var feeId = Guid.NewGuid().ToString();
             var createdFee = repo.CreateFee(new Fee
             {
@@ -49,7 +50,7 @@ namespace PromisePayDotNet.Tests
         {
             var client = GetMockClient("");
 
-            var repo = Get<FeeRepository>(client.Object);
+            var repo = Get<IFeeRepository>(client.Object);
             var feeId = Guid.NewGuid().ToString();
             Assert.Throws<ValidationException>(() => repo.CreateFee(new Fee
             {
@@ -69,7 +70,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/fees_get_by_id.json");
             var client = GetMockClient(content);
 
-            var repo = Get<FeeRepository>(client.Object);
+            var repo = Get<IFeeRepository>(client.Object);
             const string id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
             var fee = repo.GetFeeById(id);
             Assert.Equal(id, fee.Id);
@@ -81,7 +82,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/fees_list.json");
             var client = GetMockClient(content);
 
-            var repo = Get<FeeRepository>(client.Object);
+            var repo = Get<IFeeRepository>(client.Object);
             var fees = repo.ListFees();
             Assert.NotNull(fees);
             Assert.True(fees.Any());

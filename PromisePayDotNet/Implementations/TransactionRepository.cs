@@ -2,14 +2,14 @@
 using System.Linq;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class TransactionRepository : AbstractRepository, ITransactionRepository
+    internal class TransactionRepository : AbstractRepository, ITransactionRepository
     {
         public TransactionRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<TransactionRepository>(), options)

@@ -1,5 +1,5 @@
 ﻿using PromisePayDotNet.Implementations;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using PromisePayDotNet.Settings;
 

@@ -1,9 +1,6 @@
 ﻿using Xunit;
-using PromisePayDotNet.DTO;
-using PromisePayDotNet.Dynamic.Implementations;
-using PromisePayDotNet.Internals;
-using System.Collections.Generic;
 using System.IO;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
@@ -55,11 +52,11 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/generate_card_token.json");
 
             var client = GetMockClient(content);
-            var repo = Get<TokenRepository>(client.Object);
+            var repo = Get<ITokenRepository>(client.Object);
             var result = repo.GenerateCardToken("card", "064d6800-fff3-11e5-86aa-5e5517507c66");
-            Assert.Equal("card", result["token_type"]);
-            Assert.Equal("6e37598a3b33582b1dfcf13d5e2e45e3", result["token"]);
-            Assert.Equal("064d6800-fff3-11e5-86aa-5e5517507c66", result["user_id"]);
+            Assert.Equal("card", result.TokenType);
+            Assert.Equal("6e37598a3b33582b1dfcf13d5e2e45e3", result.Token);
+            Assert.Equal("064d6800-fff3-11e5-86aa-5e5517507c66", result.UserId);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class UploadRepository : AbstractRepository, IUploadRepository
+    internal class UploadRepository : AbstractRepository, IUploadRepository
     {
         public UploadRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<UploadRepository>(), options)

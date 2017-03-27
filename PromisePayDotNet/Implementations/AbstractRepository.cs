@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public abstract class AbstractRepository
+    internal abstract class AbstractRepository
     {
         protected readonly ILogger log;
 

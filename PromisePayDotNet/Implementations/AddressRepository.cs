@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class AddressRepository : AbstractRepository, IAddressRepository
+    internal class AddressRepository : AbstractRepository, IAddressRepository
     {
         public AddressRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<AddressRepository>(), options)

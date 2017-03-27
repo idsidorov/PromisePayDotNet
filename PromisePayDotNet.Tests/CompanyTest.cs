@@ -4,6 +4,7 @@ using PromisePayDotNet.DTO;
 using PromisePayDotNet.Implementations;
 using System.IO;
 using System.Linq;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
@@ -25,7 +26,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/companies_list.json");
 
             var client = GetMockClient(content);
-            var repo = Get<CompanyRepository>(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var companies = repo.ListCompanies();
             client.VerifyAll();
             Assert.NotNull(companies);
@@ -38,7 +39,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/companies_get_by_id.json");
 
             var client = GetMockClient(content);
-            var repo = Get<CompanyRepository>(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var company = repo.GetCompanyById("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5");
             client.VerifyAll();
             Assert.NotNull(company);
@@ -51,7 +52,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/companies_create.json");
 
             var client = GetMockClient(content);
-            var repo = Get<CompanyRepository>(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c";
             var createdCompany = repo.CreateCompany(new Company
             {
@@ -70,7 +71,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/companies_edit.json");
 
             var client = GetMockClient(content);
-            var repo = Get<CompanyRepository>(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var editedCompany = repo.EditCompany(new Company
             {
                 Id = "739dcfc5-adf0-4a00-b639-b4e05922994d",

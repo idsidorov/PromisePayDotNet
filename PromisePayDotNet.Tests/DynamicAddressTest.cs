@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Xunit;
-using PromisePayDotNet.Dynamic.Implementations;
 using System.Collections.Generic;
 using System.IO;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
@@ -24,12 +24,12 @@ namespace PromisePayDotNet.Tests
 
             var client = GetMockClient(content);
 
-            var repo = Get<AddressRepository>(client.Object);
+            var repo = Get<IAddressRepository>(client.Object);
 
             var address = repo.GetAddressById("07ed45e5-bb9d-459f-bb7b-a02ecb38f443");
             client.VerifyAll();
             Assert.NotNull(address);
-            Assert.Equal("07ed45e5-bb9d-459f-bb7b-a02ecb38f443", (string)address["id"]);
+            Assert.Equal("07ed45e5-bb9d-459f-bb7b-a02ecb38f443", (string)address.Id);
 
         }
     }

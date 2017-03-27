@@ -17,12 +17,13 @@ namespace PromisePayDotNet.Tests
             {
                 services.AddTransient(ci=>client);
             }
-            services.AddPromisePay();
+            services.AddOptions();
+            services.AddPromisePay(options);
             services.AddLogging();
             return services.BuildServiceProvider();
         }
 
-        PromisePaySettings options => new PromisePaySettings
+        private static PromisePaySettings options => new PromisePaySettings
         {
             ApiUrl = "https://test.api.promisepay.com",
             Login = "idsidorov@gmail.com",

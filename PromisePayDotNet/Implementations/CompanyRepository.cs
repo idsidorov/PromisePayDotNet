@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class CompanyRepository : AbstractRepository, ICompanyRepository
+    internal class CompanyRepository : AbstractRepository, ICompanyRepository
     {
         public CompanyRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<CompanyRepository>(), options)

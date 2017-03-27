@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Implementations;
 using System.IO;
 using Xunit;
 
@@ -24,7 +24,7 @@ namespace PromisePayDotNet.Tests
 
             var client = GetMockClient(content);
 
-            var repo = Get<AddressRepository>(client.Object);
+            var repo = Get<IAddressRepository>(client.Object);
             
             var address = repo.GetAddressById("07ed45e5-bb9d-459f-bb7b-a02ecb38f443");
             client.VerifyAll();

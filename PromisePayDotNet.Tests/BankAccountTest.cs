@@ -4,6 +4,7 @@ using PromisePayDotNet.DTO;
 using PromisePayDotNet.Implementations;
 using System;
 using System.IO;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
@@ -24,7 +25,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/bank_account_create.json");
 
             var client = GetMockClient(content); 
-            var repo = Get<BankAccountRepository>(client.Object);
+            var repo = Get<IBankAccountRepository>(client.Object);
 
             const string userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
             var account = new BankAccount
@@ -58,7 +59,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/bank_account_get_by_id.json");
 
             var client = GetMockClient(content);
-            var repo = Get<BankAccountRepository>(client.Object);
+            var repo = Get<IBankAccountRepository>(client.Object);
             const string id = "ec9bf096-c505-4bef-87f6-18822b9dbf2c";
             var gotAccount = repo.GetBankAccountById(id);
             client.VerifyAll();
@@ -69,7 +70,7 @@ namespace PromisePayDotNet.Tests
         public void GetBankAccountEmptyId()
         {
             var client = GetMockClient("");
-            var repo = Get<BankAccountRepository>(client.Object);
+            var repo = Get<IBankAccountRepository>(client.Object);
             Assert.Throws<ArgumentException>(() => repo.GetBankAccountById(string.Empty));
         }
 
@@ -79,7 +80,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/bank_account_get_users.json");
 
             var client = GetMockClient(content);
-            var repo = Get<BankAccountRepository>(client.Object);
+            var repo = Get<IBankAccountRepository>(client.Object);
             const string userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
             var gotUser = repo.GetUserForBankAccount("ec9bf096-c505-4bef-87f6-18822b9dbf2c");
             client.VerifyAll();
@@ -94,7 +95,7 @@ namespace PromisePayDotNet.Tests
             var content = File.ReadAllText("./Fixtures/bank_account_delete.json");
 
             var client = GetMockClient(content);
-            var repo = Get<BankAccountRepository>(client.Object);
+            var repo = Get<IBankAccountRepository>(client.Object);
 
             var result = repo.DeleteBankAccount("e923013e-61e9-4264-9622-83384e13d2b9");
             client.VerifyAll();

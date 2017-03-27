@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class PayPalAccountRepository : AbstractRepository, IPayPalAccountRepository
+    internal class PayPalAccountRepository : AbstractRepository, IPayPalAccountRepository
     {
         public PayPalAccountRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<PayPalAccountRepository>(), options)

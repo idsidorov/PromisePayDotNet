@@ -1,6 +1,6 @@
 ﻿using PromisePayDotNet.DTO;
 
-namespace PromisePayDotNet.Interfaces
+namespace PromisePayDotNet.Abstractions
 {
     public interface IPayPalAccountRepository
     {

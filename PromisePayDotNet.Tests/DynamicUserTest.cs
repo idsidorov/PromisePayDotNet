@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Xunit;
-using PromisePayDotNet.Dynamic.Implementations;
 using PromisePayDotNet.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.DTO;
 
 namespace PromisePayDotNet.Tests
 {
@@ -17,7 +18,7 @@ namespace PromisePayDotNet.Tests
         [Fact]
         public void TestUserDaoObject()
         {
-            var user = JsonConvert.DeserializeObject<IDictionary<string,object>>(GetUserByIdResponse);
+            var user = JsonConvert.DeserializeObject<IDictionary<string, object>>(GetUserByIdResponse);
             Assert.Equal("Igor Sidorov", (string)user["full_name"]);
             Assert.True(((DateTime?)user["created_at"]).HasValue);
             Assert.True(((DateTime?)user["updated_at"]).HasValue);
@@ -28,32 +29,32 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
-            var user = new Dictionary<string,object>
+            var user = new User
             {
-                {"id" , id},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id + "@google.com"}
+                Id = id,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
             };
 
             var createdUser = repo.CreateUser(user);
 
-            Assert.Equal(user["id"], createdUser["id"]);
-            Assert.Equal(user["first_name"], createdUser["first_name"]);
-            Assert.Equal(user["last_name"], createdUser["last_name"]);
-            Assert.Equal("Test Test", createdUser["full_name"]);
-            Assert.Equal(user["email"], createdUser["email"]);
-            Assert.True(((DateTime?)createdUser["created_at"]).HasValue);
-            Assert.True(((DateTime?)createdUser["updated_at"]).HasValue);
+            Assert.Equal(user.Id, createdUser.Id);
+            Assert.Equal(user.FirstName, createdUser.FirstName);
+            Assert.Equal(user.LastName, createdUser.LastName);
+            Assert.Equal("Test Test", createdUser.FullName);
+            Assert.Equal(user.Email, createdUser.Email);
+            Assert.True(createdUser.CreatedAt.HasValue);
+            Assert.True(createdUser.UpdatedAt.HasValue);
         }
 
         [Fact]
@@ -61,20 +62,22 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
-            var user = new Dictionary<string, object>
-              {{"id" , null},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id + "@google.com"}};
+            var user = new User
+            {
+                Id = null,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
+            };
             Assert.Throws<ValidationException>(() => repo.CreateUser(user));
         }
 
@@ -83,21 +86,23 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
-            var user = new Dictionary<string, object>
-              {{"id" , id},
-                {"first_name" , null},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id + "@google.com"}};
-              Assert.Throws<ValidationException>(() => repo.CreateUser(user));
+            var user = new User
+            {
+                Id = id,
+                FirstName = null,
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
+            };
+            Assert.Throws<ValidationException>(() => repo.CreateUser(user));
         }
 
         [Fact]
@@ -105,45 +110,49 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
-            var user = new Dictionary<string, object>
-               {{"id" , null},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "Australia"}, //Incorrect name - not an ISO code
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id + "@google.com"}};
+            var user = new User
+            {
+                Id = null,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "Australia", //Incorrect name - not an ISO code
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
+            };
             Assert.Throws<ValidationException>(() => repo.CreateUser(user));
         }
-        
+
         [Fact]
         public void ValidationErrorUserCreateWrongEmail()
         {
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
-            var user = new Dictionary<string, object>
-              {{"id" , null},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id }};
+            var user = new User
+            {
+                Id = null,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id
+            };
             Assert.Throws<ValidationException>(() => repo.CreateUser(user));
         }
-        
+
         [Fact]
         public void ListUsersSuccessful()
         {
@@ -151,22 +160,22 @@ namespace PromisePayDotNet.Tests
             //Then, list users
             var content = File.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var users = repo.ListUsers(200);
 
             Assert.NotNull(users);
             Assert.True(users.Any());
-            Assert.True(users.Any(x => (string)x["id"] == id));
+            Assert.True(users.Any(x => (string)x.Id == id));
 
         }
-        
+
         [Fact]
         public void ListUsersNegativeParams()
         {
             var content = File.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             Assert.Throws<ArgumentException>(() => repo.ListUsers(-10, -20));
         }
 
@@ -175,38 +184,38 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/users_list.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             Assert.Throws<ArgumentException>(() => repo.ListUsers(201));
         }
 
-        
+
         [Fact]
         public void GetUserSuccessful()
         {
             //First, create a user with known id
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
 
             //Then, get user
             var gotUser = repo.GetUserById(id);
 
             Assert.NotNull(gotUser);
-            Assert.Equal(id, (string)gotUser["id"]);
+            Assert.Equal(id, (string)gotUser.Id);
         }
-        
+
         [Fact]
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void GetUserMissingId()
         {
             var content = File.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "asdfkjas;lkflaksndflaksndfklas";
             Assert.Throws<ApiErrorsException>(() => repo.GetUserById(id));
         }
-        
+
         //[Fact]
         //[Ignore("Skipped until API method will be fixed")]
         public void DeleteUserSuccessful()
@@ -214,54 +223,56 @@ namespace PromisePayDotNet.Tests
             //throw new System.Exception();
         }
 
-        
+
         [Fact]
         //That's bad idea not to distinguish between "wrong login/password" and "There is no such ID in DB"
         public void DeleteUserMissingId()
         {
             var content = File.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, System.Net.HttpStatusCode.NotFound);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
             Assert.False(repo.DeleteUser(id));
         }
 
-        
+
         [Fact]
         public void EditUserSuccessful()
         {
             //First, create a user we'll work with
             var content = File.ReadAllText("./Fixtures/user_create.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = "608ef7e7-6113-4981-a3a3-ab8cea04eb93";
 
-            var user = new Dictionary<string, object>
-              {{"id" , id},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id  + "@google.com"}};
+            var user = new User
+            {
+                Id = id,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
+            };
 
             var createdUser = repo.CreateUser(user);
 
             //Now, try to edit newly created user
-            user["first_name"] = "Test123";
-            user["last_name"] = "Test123";
+            user.FirstName = "Test123";
+            user.LastName = "Test123";
 
             content = File.ReadAllText("./Fixtures/user_update.json");
             client = GetMockClient(content);
-            repo = Get<UserRepository>(client.Object);
+            repo = Get<IUserRepository>(client.Object);
             var modifiedUser = repo.UpdateUser(user);
-            Assert.Equal("Test123", modifiedUser["first_name"]);
-            Assert.Equal("Test123", modifiedUser["last_name"]);
-            Assert.Equal("Test123 Test123", modifiedUser["full_name"]);
+            Assert.Equal("Test123", modifiedUser.FirstName);
+            Assert.Equal("Test123", modifiedUser.LastName);
+            Assert.Equal("Test123 Test123", modifiedUser.FullName);
         }
 
         [Fact]
@@ -269,21 +280,23 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_missing.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
             var id = Guid.NewGuid().ToString();
 
-            var user = new Dictionary<string, object>
-              {{"id" , id},
-                {"first_name" , "Test"},
-                {"last_name" , "Test"},
-                {"city" , "Test"},
-                {"address_line1" , "Line 1"},
-                {"address_line2" , "Line 2"},
-                {"country" , "AUS"},
-                {"mobile" , "123123"},
-                {"state" , "state"},
-                {"zip" , "123456"},
-                {"email" , id  + "@google.com"}};
+            var user = new User
+            {
+                Id = id,
+                FirstName = "Test",
+                LastName = "Test",
+                City = "Test",
+                AddressLine1 = "Line 1",
+                AddressLine2 = "Line 2",
+                Country = "AUS",
+                Mobile = "123123",
+                State = "state",
+                Zip = "123456",
+                Email = id + "@google.com"
+            };
 
             Assert.Throws<ApiErrorsException>(() => repo.UpdateUser(user));
         }
@@ -295,13 +308,13 @@ namespace PromisePayDotNet.Tests
         {
             //throw new System.Exception();
         }
-        
+
         [Fact]
         public void ListUserItemsSuccessful()
         {
             var content = File.ReadAllText("./Fixtures/user_items.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.ListItemsForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
         }
@@ -318,10 +331,10 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_bank_accounts.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetBankAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
-            Assert.Equal("c5d37185-4472-44c1-87e2-8a5a3abb96fc", items["id"]);
+            Assert.Equal("c5d37185-4472-44c1-87e2-8a5a3abb96fc", items.Id);
         }
 
         [Fact]
@@ -329,10 +342,10 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_card_accounts.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetCardAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
-            Assert.Equal("81e44baa-b5df-4bcd-a6a7-39e5ecd91a74", items["id"]);
+            Assert.Equal("81e44baa-b5df-4bcd-a6a7-39e5ecd91a74", items.Id);
         }
 
         [Fact]
@@ -340,10 +353,10 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_paypal_accounts.json");
             var client = GetMockClient(content);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetPayPalAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
-            Assert.Equal("fdc5e5e4-b5d2-456b-8d42-ff349ccf8346", items["id"]);
+            Assert.Equal("fdc5e5e4-b5d2-456b-8d42-ff349ccf8346", items.Id);
         }
 
         [Fact]
@@ -351,7 +364,7 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_bank_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetBankAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
         }
@@ -361,7 +374,7 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_card_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetCardAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
         }
@@ -371,11 +384,11 @@ namespace PromisePayDotNet.Tests
         {
             var content = File.ReadAllText("./Fixtures/user_paypal_accounts_empty.json");
             var client = GetMockClient(content, (System.Net.HttpStatusCode)422);
-            var repo = Get<UserRepository>(client.Object);
+            var repo = Get<IUserRepository>(client.Object);
 
             var items = repo.GetPayPalAccountForUser("89592d8a-6cdb-4857-a90d-b41fc817d639");
         }
-        
+
         //[Fact]
         //[Ignore("Not implemented yet")]
         public void ListUserDisbursementAccountsEmpty()

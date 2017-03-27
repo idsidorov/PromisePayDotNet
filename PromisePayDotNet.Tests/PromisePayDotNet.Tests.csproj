@@ -5,11 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fixtures\address_get_by_id.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Fixtures\address_get_by_id.json" />
+    <Compile Remove="Fixtures\**" />
+    <EmbeddedResource Remove="Fixtures\**" />
+    <None Remove="Fixtures\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,16 +33,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <!--
-  <ItemGroup>
-    <None Include="Fixtures\card_account_create.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Fixtures\items_delete_unsuccessful.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Fixtures\items_list_fees.json" />
-  </ItemGroup>
--->
  
 </Project>

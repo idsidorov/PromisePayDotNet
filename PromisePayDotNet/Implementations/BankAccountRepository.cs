@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class BankAccountRepository : AbstractRepository, IBankAccountRepository
+    internal class BankAccountRepository : AbstractRepository, IBankAccountRepository
     {
         public BankAccountRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<BankAccountRepository>(), options)

@@ -1,7 +1,7 @@
 ﻿using PromisePayDotNet.DTO;
 using System.Collections.Generic;
 
-namespace PromisePayDotNet.Interfaces
+namespace PromisePayDotNet.Abstractions
 {
     public interface ITokenRepository
     {
@@ -10,5 +10,7 @@ namespace PromisePayDotNet.Interfaces
         IDictionary<string, object> RequestSessionToken(Token token);
 
         Widget GetWidget(string sessionToken);
+
+        CardToken GenerateCardToken(string tokenType, string userId);
     }
 }

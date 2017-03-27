@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
+using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class TokenRepository : AbstractRepository, ITokenRepository
+    internal class TokenRepository : AbstractRepository, ITokenRepository
     {
         public TokenRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
             : base(client, loggerFactory.CreateLogger<TokenRepository>(), options)
@@ -58,6 +58,21 @@ namespace PromisePayDotNet.Implementations
             {
                 var itemCollection = dict["widget"];
                 return JsonConvert.DeserializeObject<Widget>(JsonConvert.SerializeObject(itemCollection));
+            }
+            return null;
+        }
+
+        public CardToken GenerateCardToken(string tokenType, string userId)
+        {
+            var request = new RestRequest("/token_auths", Method.POST);
+            request.AddParameter("token_type", tokenType);
+            request.AddParameter("user_id", userId);
+            var response = SendRequest(Client, request);
+            var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
+            if (dict.ContainsKey("token_auth"))
+            {
+                var itemCollection = dict["token_auth"];
+                return JsonConvert.DeserializeObject<CardToken>(JsonConvert.SerializeObject(itemCollection));
             }
             return null;
         }

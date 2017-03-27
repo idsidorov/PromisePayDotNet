@@ -1,7 +1,7 @@
 ﻿using PromisePayDotNet.DTO;
 using System.Collections.Generic;
 
-namespace PromisePayDotNet.Interfaces
+namespace PromisePayDotNet.Abstractions
 {
     public interface IFeeRepository
     {
