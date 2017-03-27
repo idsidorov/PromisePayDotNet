@@ -23,6 +23,10 @@ namespace PromisePayDotNet.Tests
                 Login = "idsidorov@gmail.com",
                 Password = "mJrUGo2Vxuo9zqMVAvkw"
             });
+            if (null != client)
+            {
+                services.AddTransient(ci => client);
+            }
             services.AddOptions();
             services.AddLogging();
             return services.BuildServiceProvider();
