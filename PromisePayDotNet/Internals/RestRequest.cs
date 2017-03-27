@@ -22,7 +22,7 @@ namespace PromisePayDotNet.Internals
 
         internal void AddParameter(string name, object value)
         {
-            if (ReferenceEquals(null, value)) throw new NullReferenceException(nameof(value));
+            if (ReferenceEquals(null, value)) return;
             if (this.url.Contains("?"))
             {
                 this.url = $"{this.url}&{WebUtility.UrlEncode(name)}={WebUtility.UrlEncode(value.ToString())}";
