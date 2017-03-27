@@ -12,10 +12,11 @@
     <VersionPrefix>1.1.0</VersionPrefix>
     <VersionSufix>pre</VersionSufix>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <PackageProjectUrl>https://github.com/PromisePay/promisepay-dotnet</PackageProjectUrl>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/PromisePay/promisepay-dotnet</RepositoryUrl>
+    <PackageReleaseNotes>.net Core version and .net 45 version of PromisePay client</PackageReleaseNotes>
 
   </PropertyGroup>
 
