@@ -1,20 +1,21 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class BankAccountRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IBankAccountRepository
     {
-        public BankAccountRepository(IRestClient client)
-            : base(client)
+        public BankAccountRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<BankAccountRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IDictionary<string, object> GetBankAccountById(string bankAccountId)
         {
@@ -59,7 +60,7 @@ namespace PromisePayDotNet.Dynamic.Implementations
             AssertIdNotNull(bankAccountId);
             var request = new RestRequest("/bank_accounts/{id}/users", Method.GET);
             request.AddUrlSegment("id", bankAccountId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = SendRequest(Client, request);
 
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))

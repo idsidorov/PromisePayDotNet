@@ -1,22 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
 using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
     public class UserRepository : AbstractRepository, IUserRepository
     {
-        public UserRepository(IRestClient client) : base(client)
+        public UserRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<UserRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region public methods
 
@@ -99,7 +100,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(userId);
             var request = new RestRequest("/users/{id}/paypal_accounts", Method.GET);
             request.AddUrlSegment("id", userId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
                 response = SendRequest(Client, request);
@@ -126,7 +127,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(userId);
             var request = new RestRequest("/users/{id}/card_accounts", Method.GET);
             request.AddUrlSegment("id", userId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
                 response = SendRequest(Client, request);
@@ -153,7 +154,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(userId);
             var request = new RestRequest("/users/{id}/bank_accounts", Method.GET);
             request.AddUrlSegment("id", userId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
                 response = SendRequest(Client, request);
@@ -183,7 +184,7 @@ namespace PromisePayDotNet.Implementations
             var request = new RestRequest("/users/{id}/disbursement_account?account_id={account_id}", Method.POST);
             request.AddUrlSegment("id", userId);
             request.AddUrlSegment("account_id", accountId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
                 response = SendRequest(Client, request);
@@ -240,22 +241,9 @@ namespace PromisePayDotNet.Implementations
             {
                 throw new ValidationException("Field User.Country should contain 3-letter ISO country code!");
             }
-            if (!IsCorrectEmail(user.Email))
+            if (!Email.IsCorrect(user.Email))
             {
                 throw new ValidationException("Field User.Email should contain correct email address!");
-            }
-        }
-
-        private bool IsCorrectEmail(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
             }
         }
 

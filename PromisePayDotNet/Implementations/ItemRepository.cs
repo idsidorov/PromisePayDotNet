@@ -1,21 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
 using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
     public class ItemRepository : AbstractRepository, IItemRepository
     {
-        public ItemRepository(IRestClient client) : base(client)
+        public ItemRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<ItemRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<Item> ListItems(int limit = 10, int offset = 0)
         {
@@ -92,7 +94,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/transactions", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
                 response = SendRequest(Client, request);
@@ -149,7 +151,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/buyers", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = SendRequest(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))
             {
@@ -164,7 +166,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/sellers", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = SendRequest(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))
             {

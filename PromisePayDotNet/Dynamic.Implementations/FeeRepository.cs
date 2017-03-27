@@ -1,21 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.Exceptions;
-using RestSharp;
+using PromisePayDotNet.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class FeeRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IFeeRepository
     {
-        public FeeRepository(IRestClient client)
-            : base(client)
+        public FeeRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<FeeRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<IDictionary<string,object>> ListFees()
         {

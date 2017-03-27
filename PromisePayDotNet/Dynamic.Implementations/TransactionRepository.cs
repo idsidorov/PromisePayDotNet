@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+
 using System.Linq;
 
 namespace PromisePayDotNet.Dynamic.Implementations
@@ -8,12 +11,11 @@ namespace PromisePayDotNet.Dynamic.Implementations
     public class TransactionRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.ITransactionRepository
     {
-        public TransactionRepository(IRestClient client)
-            : base(client)
+        public TransactionRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<TransactionRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<IDictionary<string,object>> ListTransactions(int limit = 10, int offset = 0)
         {

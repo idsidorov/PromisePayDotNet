@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PromisePayDotNet.Internals;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class TokenRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                     PromisePayDotNet.Dynamic.Interfaces.ITokenRepository
     {
-        public TokenRepository(IRestClient client)
-            : base(client)
+        public TokenRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<TokenRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public string RequestToken()
         {

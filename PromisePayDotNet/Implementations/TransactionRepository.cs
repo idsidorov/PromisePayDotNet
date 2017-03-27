@@ -3,18 +3,18 @@ using System.Linq;
 using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Internals;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
     public class TransactionRepository : AbstractRepository, ITransactionRepository
     {
-        public TransactionRepository(IRestClient client) : base(client)
+        public TransactionRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<TransactionRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         public IEnumerable<Transaction> ListTransactions(int limit = 10, int offset = 0)
         {
             AssertListParamsCorrect(limit, offset);

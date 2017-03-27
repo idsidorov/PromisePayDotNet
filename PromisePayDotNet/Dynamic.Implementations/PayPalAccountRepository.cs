@@ -1,20 +1,22 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
+
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class PayPalAccountRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IPayPalAccountRepository
     {
-        public PayPalAccountRepository(IRestClient client)
-            : base(client)
+        public PayPalAccountRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<PayPalAccountRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IDictionary<string, object> GetPayPalAccountById(string paypalAccountId)
         {
