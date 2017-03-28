@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace PromisePayDotNet.Implementations
 {
@@ -117,7 +118,15 @@ namespace PromisePayDotNet.Implementations
             if (dict.ContainsKey("paypal_accounts"))
             {
                 var itemCollection = dict["paypal_accounts"];
-                return JsonConvert.DeserializeObject<List<PayPalAccount>>(JsonConvert.SerializeObject(itemCollection));
+                try
+                {
+                    return JsonConvert.DeserializeObject<List<PayPalAccount>>(JsonConvert.SerializeObject(itemCollection));
+                }
+                catch (JsonSerializationException)
+                {
+                    return new[] { JsonConvert.DeserializeObject<PayPalAccount>(JsonConvert.SerializeObject(itemCollection)) };
+                }
+                
             }
             return new List<PayPalAccount>();
         }
@@ -144,7 +153,15 @@ namespace PromisePayDotNet.Implementations
             if (dict.ContainsKey("card_accounts"))
             {
                 var itemCollection = dict["card_accounts"];
-                return JsonConvert.DeserializeObject<List<CardAccount>>(JsonConvert.SerializeObject(itemCollection));
+                try
+                {
+                    return JsonConvert.DeserializeObject<List<CardAccount>>(JsonConvert.SerializeObject(itemCollection));
+                }
+                catch (JsonSerializationException)
+                {
+                    return new[] { JsonConvert.DeserializeObject<CardAccount>(JsonConvert.SerializeObject(itemCollection)) };
+                }
+            
             }
             return new List<CardAccount>();
         }
@@ -171,7 +188,14 @@ namespace PromisePayDotNet.Implementations
             if (dict.ContainsKey("bank_accounts"))
             {
                 var itemCollection = dict["bank_accounts"];
-                return JsonConvert.DeserializeObject<List<BankAccount>>(JsonConvert.SerializeObject(itemCollection));
+                try
+                {
+                    return JsonConvert.DeserializeObject<List<BankAccount>>(JsonConvert.SerializeObject(itemCollection));
+                }
+                catch (JsonSerializationException)
+                {
+                    return new[] { JsonConvert.DeserializeObject<BankAccount>(JsonConvert.SerializeObject(itemCollection)) };
+                }
             }
             
             return new List<BankAccount>();
