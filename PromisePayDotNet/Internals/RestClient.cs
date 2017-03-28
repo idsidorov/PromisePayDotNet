@@ -23,8 +23,9 @@ namespace PromisePayDotNet.Internals
                 Method = request.Method,
                 RequestUri = rel,
             };
+            req.Headers.Add("Content-Type", "application/json");
             Authenticator?.Add(req);
-            
+
             var result = await _client.SendAsync(req);
 
             return new RestResponse
