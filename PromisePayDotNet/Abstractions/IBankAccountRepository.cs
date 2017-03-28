@@ -1,15 +1,36 @@
 ﻿using PromisePayDotNet.DTO;
+using PromisePayDotNet.Internals;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Abstractions
 {
     public interface IBankAccountRepository
     {
-        BankAccount GetBankAccountById(string bankAccountId);
+        Task<BankAccount> GetBankAccountByIdAsync(string bankAccountId);
 
-        BankAccount CreateBankAccount(BankAccount bankAccount);
+        Task<BankAccount> CreateBankAccountAsync(BankAccount bankAccount);
 
-        bool DeleteBankAccount(string bankAccountId);
+        Task<bool> DeleteBankAccountAsync(string bankAccountId);
 
-        User GetUserForBankAccount(string bankAccountId);
+        Task<User> GetUserForBankAccountAsync(string bankAccountId);
+    }
+    public static class BankAccountRepositoryExtensions
+    {
+        public static BankAccount GetBankAccountById(this IBankAccountRepository repo, string bankAccountId)
+        {
+            return repo.GetBankAccountByIdAsync(bankAccountId).WrapResult();
+        }
+        public static BankAccount CreateBankAccount(this IBankAccountRepository repo, BankAccount bankAccount)
+        {
+            return repo.CreateBankAccountAsync(bankAccount).WrapResult();
+        }
+        public static bool DeleteBankAccount(this IBankAccountRepository repo, string bankAccountId)
+        {
+            return repo.DeleteBankAccountAsync(bankAccountId).WrapResult();
+        }
+        public static User GetUserForBankAccount(this IBankAccountRepository repo, string bankAccountId)
+        {
+            return repo.GetUserForBankAccountAsync(bankAccountId).WrapResult();
+        }
     }
 }

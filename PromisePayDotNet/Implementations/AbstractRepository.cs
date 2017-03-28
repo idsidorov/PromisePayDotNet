@@ -76,19 +76,7 @@ namespace PromisePayDotNet.Implementations
         [Obsolete("Use async!")]
         protected RestResponse SendRequest(IRestClient client, RestRequest request)
         {
-            try
-            {
-                return SendRequestAsync(client, request).Result;
-            }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerException != null && ex.InnerException is ApiErrorsException)
-                    throw ex.InnerException;
-                if (ex.InnerException != null && ex.InnerException is UnauthorizedException)
-                    throw ex.InnerException;
-                throw;
-            }
-            
+            return SendRequestAsync(client, request).WrapResult();
         }
 
         protected async Task<RestResponse> SendRequestAsync(IRestClient client, RestRequest request)
