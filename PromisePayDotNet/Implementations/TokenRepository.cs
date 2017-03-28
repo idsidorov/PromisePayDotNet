@@ -6,7 +6,7 @@ using PromisePayDotNet.Abstractions;
 using PromisePayDotNet.Internals;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Implementations
 {
@@ -18,14 +18,14 @@ namespace PromisePayDotNet.Implementations
         }
 
 
-        public string RequestToken()
+        public async Task<string> RequestTokenAsync()
         {
             var request = new RestRequest("/request_token", Method.GET);
-            var response = SendRequest(Client, request);
-            return JsonConvert.DeserializeObject<IDictionary<string, string>>(response.Content).Values.First();            
+            var response = await SendRequestAsync(Client, request);
+            return JsonConvert.DeserializeObject<IDictionary<string, string>>(response.Content).Values.First();
         }
 
-        public IDictionary<string, object> RequestSessionToken(Token token)
+        public async Task<IDictionary<string, object>> RequestSessionTokenAsync(Token token)
         {
             var request = new RestRequest("/request_session_token", Method.GET);
             request.AddParameter("current_user_id", token.CurrentUserId);
@@ -45,14 +45,14 @@ namespace PromisePayDotNet.Implementations
             request.AddParameter("external_buyer_id", token.ExternalBuyerId);
             request.AddParameter("fee_ids", token.FeeIds);
             request.AddParameter("payment_type_id", (int)token.PaymentType);
-            var response = SendRequest(Client, request);
-            return JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);                     
+            var response = await SendRequestAsync(Client, request);
+            return JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
         }
-        public Widget GetWidget(string sessionToken)
+        public async Task<Widget> GetWidgetAsync(string sessionToken)
         {
             var request = new RestRequest("/widget", Method.GET);
             request.AddParameter("session_token", sessionToken);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("widget"))
             {
@@ -62,12 +62,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public CardToken GenerateCardToken(string tokenType, string userId)
+        public async Task<CardToken> GenerateCardTokenAsync(string tokenType, string userId)
         {
             var request = new RestRequest("/token_auths", Method.POST);
             request.AddParameter("token_type", tokenType);
             request.AddParameter("user_id", userId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("token_auth"))
             {
