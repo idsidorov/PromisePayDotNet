@@ -8,15 +8,15 @@ namespace PromisePayDotNet.Abstractions
     public interface ITokenRepository
     {
         /// <summary>
-        /// 
+        /// NOTE: Not documented on site
         /// </summary>
         Task<string> RequestTokenAsync();
         /// <summary>
-        /// 
+        /// NOTE: Not documented on site
         /// </summary>
         Task<IDictionary<string, object>> RequestSessionTokenAsync(Token token);
         /// <summary>
-        /// 
+        /// NOTE: Not documented on site
         /// </summary>
         Task<Widget> GetWidgetAsync(string sessionToken);
         /// <summary>

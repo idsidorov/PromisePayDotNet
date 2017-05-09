@@ -18,7 +18,7 @@ namespace PromisePayDotNet.Internals
 
         internal void AddUrlSegment(string name, string value)
         {
-            this.url = this.url.Replace($"{{{name}}}", WebUtility.UrlEncode(value));
+            this.url = this.url.Replace($"{{{name}}}", Uri.EscapeDataString(value));
         }
 
         internal void AddParameter(string name, object value)
@@ -26,11 +26,11 @@ namespace PromisePayDotNet.Internals
             if (ReferenceEquals(null, value)) return;
             if (this.url.Contains("?"))
             {
-                this.url = $"{this.url}&{WebUtility.UrlEncode(name)}={WebUtility.UrlEncode(value.ToString())}";
+                this.url = $"{this.url}&{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value.ToString())}";
             }
             else
             {
-                this.url = $"{this.url}?{WebUtility.UrlEncode(name)}={WebUtility.UrlEncode(value.ToString())}";
+                this.url = $"{this.url}?{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value.ToString())}";
             }
         }
     }

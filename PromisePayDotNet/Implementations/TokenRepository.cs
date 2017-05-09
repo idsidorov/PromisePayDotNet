@@ -7,6 +7,7 @@ using PromisePayDotNet.Internals;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using System;
 
 namespace PromisePayDotNet.Implementations
 {
@@ -20,6 +21,7 @@ namespace PromisePayDotNet.Implementations
 
         public async Task<string> RequestTokenAsync()
         {
+            // NOTE: there is no doc related to this!
             var request = new RestRequest("/request_token", Method.GET);
             var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, string>>(response.Content).Values.First();
@@ -27,6 +29,7 @@ namespace PromisePayDotNet.Implementations
 
         public async Task<IDictionary<string, object>> RequestSessionTokenAsync(Token token)
         {
+            // NOTE: there is no doc related to this!
             var request = new RestRequest("/request_session_token", Method.GET);
             request.AddParameter("current_user_id", token.CurrentUserId);
             request.AddParameter("current_user", token.CurrentUser);
@@ -48,8 +51,10 @@ namespace PromisePayDotNet.Implementations
             var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
         }
+
         public async Task<Widget> GetWidgetAsync(string sessionToken)
         {
+            // NOTE: there is no doc related to this!
             var request = new RestRequest("/widget", Method.GET);
             request.AddParameter("session_token", sessionToken);
             var response = await SendRequestAsync(Client, request);

@@ -3,7 +3,7 @@ using PromisePayDotNet.Enums;
 
 namespace PromisePayDotNet.DTO
 {
-    public class Token
+    public class Token //NOTE: Why is this called token?
     {
         [JsonProperty(PropertyName = "current_user_id")]
         public string CurrentUserId { get; set; }
