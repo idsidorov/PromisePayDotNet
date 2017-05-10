@@ -1,20 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class UploadRepository : AbstractRepository, IUploadRepository
+    internal class UploadRepository : AbstractRepository, IUploadRepository
     {
-        public UploadRepository(IRestClient client) : base(client)
+        public UploadRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<UploadRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IList<Upload> ListUploads()
         {

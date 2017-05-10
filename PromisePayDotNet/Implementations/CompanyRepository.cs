@@ -1,20 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
+
 
 namespace PromisePayDotNet.Implementations
 {
-    public class CompanyRepository : AbstractRepository, ICompanyRepository
+    internal class CompanyRepository : AbstractRepository, ICompanyRepository
     {
-        public CompanyRepository(IRestClient client) : base(client)
+        public CompanyRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<CompanyRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<Company> ListCompanies()
         {

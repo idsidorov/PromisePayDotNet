@@ -1,53 +1,44 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
-using RestSharp;
-using RestSharp.Authenticators;
+using PromisePayDotNet.Settings;
+using PromisePayDotNet.Internals;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class AbstractRepository
+    internal abstract class AbstractRepository
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected readonly ILogger log;
 
         protected const int EntityListLimit = 200;
 
         protected IRestClient Client;
-
-        public AbstractRepository(IRestClient client)
+        public AbstractRepository(IRestClient client, ILogger logger, IOptions<PromisePaySettings> options)
         {
+            Configurataion = options.Value;
+            if (options.Value == null) throw new NullReferenceException(nameof(options.Value));
+            log = logger;
             this.Client = client;
             client.BaseUrl = new Uri(BaseUrl);
             client.Authenticator = new HttpBasicAuthenticator(Login, Password);
         }
 
-        protected Hashtable Configurataion
-        {
-            get
-            {
-                var ht = ConfigurationManager.GetSection("PromisePay/Settings") as Hashtable;
-                if (ht == null)
-                {
-                    log.Fatal("Unable to get PromisePay settings section from config file");
-                    throw new MisconfigurationException("Unable to get PromisePay settings section from config file");
-                }
-                return ht;
-            }
-        }
-
+        protected PromisePaySettings Configurataion { get; }
+      
         protected string BaseUrl
         {
             get
             {
-                var baseUrl = Configurataion["ApiUrl"] as String;
+                var baseUrl = Configurataion.ApiUrl;
                 if (baseUrl == null)
                 {
-                    log.Fatal("Unable to get URL info from config file");
+                    log.LogError("Unable to get URL info from config file");
                     throw new MisconfigurationException("Unable to get URL info from config file");
                 }
                 return baseUrl;
@@ -58,10 +49,10 @@ namespace PromisePayDotNet.Implementations
         {
             get
             {
-                var baseUrl = Configurataion["Login"] as String;
+                var baseUrl = Configurataion.Login;
                 if (baseUrl == null)
                 {
-                    log.Fatal("Unable to get Login info from config file");
+                    log.LogError("Unable to get Login info from config file");
                     throw new MisconfigurationException("Unable to get Login info from config file");
                 }
                 return baseUrl;
@@ -73,40 +64,45 @@ namespace PromisePayDotNet.Implementations
         {
             get
             {
-                var baseUrl = Configurataion["Password"] as String;
+                var baseUrl = Configurataion.Password;
                 if (baseUrl == null)
                 {
-                    log.Fatal("Unable to get Password info from config file");
+                    log.LogError("Unable to get Password info from config file");
                     throw new MisconfigurationException("Unable to get Password info from config file");
                 }
                 return baseUrl;
             }
         }
-
-        protected IRestResponse SendRequest(IRestClient client, IRestRequest request)
+        [Obsolete("Use async!")]
+        protected RestResponse SendRequest(IRestClient client, RestRequest request)
         {
-            var response = client.Execute(request);
+            return SendRequestAsync(client, request).WrapResult();
+        }
 
-            log.Debug(String.Format(
+        protected async Task<RestResponse> SendRequestAsync(IRestClient client, RestRequest request)
+        {
+            var response = await client.ExecuteAsync(request);
+
+            log.LogDebug(String.Format(
                     "Executed request to {0} with method {1}, got the following status: {2} and the body is {3}",
                     response.ResponseUri, request.Method, response.StatusDescription, response.Content));
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                log.Error("Your login/password are unknown to server");
+                log.LogError("Your login/password are unknown to server");
                 throw new UnauthorizedException("Your login/password are unknown to server");
             }
 
             if (((int)response.StatusCode) == 422)
             {
                 var errors = JsonConvert.DeserializeObject<ErrorsDAO>(response.Content).Errors;
-                log.Error(String.Format("API returned following errors: {0}", JsonConvert.SerializeObject(errors)));
+                log.LogError(String.Format("API returned following errors: {0}", JsonConvert.SerializeObject(errors)));
                 throw new ApiErrorsException("API returned errors, see Errors property", errors);
             }
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 var message = JsonConvert.DeserializeObject<IDictionary<string,string>>(response.Content)["message"];
-                log.Error(String.Format("Bad request: {0}", message));
+                log.LogError(String.Format("Bad request: {0}", message));
                 throw new ApiErrorsException(message, null);
             }
             return response;
@@ -116,7 +112,7 @@ namespace PromisePayDotNet.Implementations
         {
             if (string.IsNullOrEmpty(itemId))
             {
-                log.Error("id cannot be empty!");
+                log.LogError("id cannot be empty!");
                 throw new ArgumentException("id cannot be empty!");
             }
         }
@@ -125,14 +121,14 @@ namespace PromisePayDotNet.Implementations
         {
             if (limit < 0 || offset < 0)
             {
-                log.Error("limit and offset values should be nonnegative!");
+                log.LogError("limit and offset values should be nonnegative!");
                 throw new ArgumentException("limit and offset values should be nonnegative!");
             }
 
             if (limit > EntityListLimit)
             {
                 var message = String.Format("Max value for limit parameter is {0}!", EntityListLimit);
-                log.Error(message);
+                log.LogError(message);
                 throw new ArgumentException(message);
             }
         }

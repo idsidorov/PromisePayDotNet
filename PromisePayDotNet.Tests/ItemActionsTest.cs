@@ -1,78 +1,73 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 
 namespace PromisePayDotNet.Tests
 {
 
     public class ItemActionsTest
     {
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Fact]
+        //[Ignore("Not implemented yet")]
         public void MakePaymentSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Fact]
+        //[Ignore("Not implemented yet")]
         public void RequestPaymentSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Fact]
+        //[Ignore("Not implemented yet")]
         public void ReleasePaymentSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Fact]
+        //[Ignore("Not implemented yet")]
         public void RequestReleaseSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Fact]
+        //[Ignore("Not implemented yet")]
         public void CancelSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Ignore("Not implemented yet")]
         public void AcknowledgeWireSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Ignore("Not implemented yet")]
         public void AcknowledgePayPalSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Ignore("Not implemented yet")]
         public void RevertWireSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Ignore("Not implemented yet")]
         public void RequestRefundSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
 
-        [Test]
-        [Ignore("Not implemented yet")]
+        //[Ignore("Not implemented yet")]
         public void RefundSuccessfully()
         {
-            Assert.Fail();
+            throw new System.Exception();
         }
     }
 }

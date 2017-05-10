@@ -1,26 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class AddressRepository : AbstractRepository, IAddressRepository
+    internal class AddressRepository : AbstractRepository, IAddressRepository
     {
-        public AddressRepository(IRestClient client) : base(client)
+        public AddressRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<AddressRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public Address GetAddressById(string addressId)
+        public async Task<Address> GetAddressByIdAsync(string addressId)
         {
             AssertIdNotNull(addressId);
             var request = new RestRequest("/addresses/{id}", Method.GET);
             request.AddUrlSegment("id", addressId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Address>>(response.Content).Values.First(); 
         }
     }

@@ -1,57 +1,58 @@
 ﻿using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Implementations;
 using System.IO;
 using System.Linq;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
     public class CompanyTest : AbstractTest
     {
-        [Test]
+        [Fact]
         public void CompanyDeserialization()
         {
             const string jsonStr = "{ \"legal_name\": \"Igor\", \"name\": null, \"id\": \"e466dfb4-f05c-4c7f-92a3-09a0a28c7af5\", \"related\": { \"address\": \"07ed45e5-bb9d-459f-bb7b-a02ecb38f443\" }, \"links\": { \"self\": \"/companies/e466dfb4-f05c-4c7f-92a3-09a0a28c7af5\" } }";
             var company = JsonConvert.DeserializeObject<Company>(jsonStr);
-            Assert.IsNotNull(company);
-            Assert.AreEqual("Igor", company.LegalName);
-            Assert.AreEqual("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5", company.Id);
+            Assert.NotNull(company);
+            Assert.Equal("Igor", company.LegalName);
+            Assert.Equal("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5", company.Id);
         }
 
-        [Test]
+        [Fact]
         public void ListCompaniesSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_list.json");
+            var content = Files.ReadAllText("./Fixtures/companies_list.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var companies = repo.ListCompanies();
             client.VerifyAll();
-            Assert.IsNotNull(companies);
-            Assert.IsTrue(companies.Any());
+            Assert.NotNull(companies);
+            Assert.True(companies.Any());
         }
 
-        [Test]
+        [Fact]
         public void GetCompanyByIdSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_get_by_id.json");
+            var content = Files.ReadAllText("./Fixtures/companies_get_by_id.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var company = repo.GetCompanyById("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5");
             client.VerifyAll();
-            Assert.IsNotNull(company);
-            Assert.AreEqual("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5",company.Id);
+            Assert.NotNull(company);
+            Assert.Equal("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5",company.Id);
         }
 
-        [Test]
+        [Fact]
         public void CreateCompanySuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_create.json");
+            var content = Files.ReadAllText("./Fixtures/companies_create.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c";
             var createdCompany = repo.CreateCompany(new Company
             {
@@ -60,17 +61,17 @@ namespace PromisePayDotNet.Tests
                 Country = "AUS"
             }, userId);
             client.VerifyAll();
-            Assert.IsNotNull(createdCompany);
-            Assert.IsNotNull(createdCompany.Id);
+            Assert.NotNull(createdCompany);
+            Assert.NotNull(createdCompany.Id);
         }
 
-        [Test]
+        [Fact]
         public void EditCompanySuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_edit.json");
+            var content = Files.ReadAllText("./Fixtures/companies_edit.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = Get<ICompanyRepository>(client.Object);
             var editedCompany = repo.EditCompany(new Company
             {
                 Id = "739dcfc5-adf0-4a00-b639-b4e05922994d",
@@ -79,7 +80,7 @@ namespace PromisePayDotNet.Tests
                 Country = "AUS"
             });
             client.VerifyAll();
-            Assert.AreEqual("Test company #2", editedCompany.Name);
+            Assert.Equal("Test company #2", editedCompany.Name);
         }
 
 

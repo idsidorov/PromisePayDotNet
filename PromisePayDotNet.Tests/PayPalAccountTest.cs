@@ -1,31 +1,32 @@
 ﻿using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Implementations;
-using RestSharp;
+using PromisePayDotNet.Internals;
 using System;
 using System.IO;
+using PromisePayDotNet.Abstractions;
 
 namespace PromisePayDotNet.Tests
 {
     public class PayPalAccountTest : AbstractTest
     {
-        [Test]
+        [Fact]
         public void PayPalAccountDeserialization()
         {
             var jsonStr = "{ \"active\": true, \"created_at\": \"2015-04-25T12:31:39.324Z\", \"updated_at\": \"2015-04-25T12:31:39.324Z\", \"id\": \"70d93fe3-6c2e-4a1c-918f-13b8e7bb3779\", \"currency\": \"USD\", \"paypal\": { \"email\": \"test.me@promisepay.com\" }, \"links\": { \"self\": \"/paypal_accounts/70d93fe3-6c2e-4a1c-918f-13b8e7bb3779\", \"users\": \"/paypal_accounts/70d93fe3-6c2e-4a1c-918f-13b8e7bb3779/users\" } }";
             var payPalAccount = JsonConvert.DeserializeObject<PayPalAccount>(jsonStr);
-            Assert.AreEqual("70d93fe3-6c2e-4a1c-918f-13b8e7bb3779", payPalAccount.Id);
-            Assert.AreEqual("USD", payPalAccount.Currency);
-            Assert.AreEqual("test.me@promisepay.com", payPalAccount.PayPal.Email);
+            Assert.Equal("70d93fe3-6c2e-4a1c-918f-13b8e7bb3779", payPalAccount.Id);
+            Assert.Equal("USD", payPalAccount.Currency);
+            Assert.Equal("test.me@promisepay.com", payPalAccount.PayPal.Email);
         }
 
-        [Test]
+        [Fact]
         public void CreatePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/paypal_account_create.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = Get<IPayPalAccountRepository>(client.Object);
 
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
             var account = new PayPalAccount
@@ -38,64 +39,64 @@ namespace PromisePayDotNet.Tests
                 }
             };
             var createdAccount = repo.CreatePayPalAccount(account);
-            Assert.IsNotNull(createdAccount);
-            Assert.IsNotNull(createdAccount.Id);
-            Assert.AreEqual("AUD", createdAccount.Currency); // It seems that currency is determined by country
-            Assert.IsNotNull(createdAccount.CreatedAt);
-            Assert.IsNotNull(createdAccount.UpdatedAt);
+            Assert.NotNull(createdAccount);
+            Assert.NotNull(createdAccount.Id);
+            Assert.Equal("AUD", createdAccount.Currency); // It seems that currency is determined by country
+            Assert.NotNull(createdAccount.CreatedAt);
+            Assert.NotNull(createdAccount.UpdatedAt);
 
         }
 
-        [Test]
+        [Fact]
         public void GetPayPalAccountSuccessfully()
         {
             var id = "cd2ab053-25e5-491a-a5ec-0c32dbe76efa";
-            var content = File.ReadAllText("../../Fixtures/paypal_account_create.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = Get<IPayPalAccountRepository>(client.Object);
 
             var gotAccount = repo.GetPayPalAccountById(id);
 
-            Assert.AreEqual(id, gotAccount.Id);
+            Assert.Equal(id, gotAccount.Id);
         }
 
-        [Test]
+        [Fact]
         public void GetPayPalAccountEmptyId()
         {
             var client = GetMockClient("");
 
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = Get<IPayPalAccountRepository>(client.Object);
 
             Assert.Throws<ArgumentException>(()=>repo.GetPayPalAccountById(string.Empty));
         }
 
-        [Test]
+        [Fact]
         public void GetUserForPayPalAccountSuccessfully()
         {
             var id = "3a780d4a-5de0-409c-9587-080930ddea3c";
 
-            var content = File.ReadAllText("../../Fixtures/paypal_account_get_users.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_get_users.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = Get<IPayPalAccountRepository>(client.Object);
 
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 
             var gotUser = repo.GetUserForPayPalAccount(id);
 
-            Assert.IsNotNull(gotUser);
+            Assert.NotNull(gotUser);
 
-            Assert.AreEqual(userId, gotUser.Id);
+            Assert.Equal(userId, gotUser.Id);
         }
 
-        [Test]
+        [Fact]
         public void DeletePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/paypal_account_delete.json");
+            var content = Files.ReadAllText("./Fixtures/paypal_account_delete.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = Get<IPayPalAccountRepository>(client.Object);
 
             var result = repo.DeletePayPalAccount("cd2ab053-25e5-491a-a5ec-0c32dbe76efa");
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
     }

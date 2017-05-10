@@ -1,30 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
 using PromisePayDotNet.Exceptions;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class ItemRepository : AbstractRepository, IItemRepository
+    internal class ItemRepository : AbstractRepository, IItemRepository
     {
-        public ItemRepository(IRestClient client) : base(client)
+        public ItemRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<ItemRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IEnumerable<Item> ListItems(int limit = 10, int offset = 0)
+        public async Task<IEnumerable<Item>> ListItemsAsync(int limit = 10, int offset = 0)
         {
             AssertListParamsCorrect(limit, offset);
             var request = new RestRequest("/items", Method.GET);
             request.AddParameter("limit", limit);
             request.AddParameter("offset", offset);
 
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -34,16 +37,16 @@ namespace PromisePayDotNet.Implementations
             return new List<Item>();
         }
 
-        public Item GetItemById(string itemId)
+        public async Task<Item> GetItemByIdAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}", Method.GET);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Item>>(response.Content).Values.First();
         }
 
-        public Item CreateItem(Item item)
+        public async Task<Item> CreateItemAsync(Item item)
         {
             var request = new RestRequest("/items", Method.POST);
             request.AddParameter("id", item.Id);
@@ -54,16 +57,16 @@ namespace PromisePayDotNet.Implementations
             request.AddParameter("seller_id", item.SellerId);
             request.AddParameter("fee_ids", item.FeeIds);
             request.AddParameter("description", item.Description);
-             var response = SendRequest(Client, request);
+             var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Item>>(response.Content).Values.First();
         }
 
-        public bool DeleteItem(string itemId)
+        public async Task<bool> DeleteItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}", Method.DELETE);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return false;
@@ -71,7 +74,7 @@ namespace PromisePayDotNet.Implementations
             return true;
         }
 
-        public Item UpdateItem(Item item)
+        public async Task<Item> UpdateItemAsync(Item item)
         {
             var request = new RestRequest("/items/{id}", Method.PATCH);
             request.AddUrlSegment("id", item.Id);
@@ -83,19 +86,19 @@ namespace PromisePayDotNet.Implementations
             request.AddParameter("seller_id", item.SellerId);
             request.AddParameter("fee_ids", item.FeeIds);
 
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Item>>(response.Content).Values.First();
         }
 
-        public IEnumerable<Transaction> ListTransactionsForItem(string itemId)
+        public async Task<IEnumerable<Transaction>> ListTransactionsForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/transactions", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response;
+            RestResponse response;
             try
             {
-                response = SendRequest(Client, request);
+                response = await SendRequestAsync(Client, request);
             }
             catch (ApiErrorsException e)
             {
@@ -114,12 +117,12 @@ namespace PromisePayDotNet.Implementations
             return new List<Transaction>();
         }
 
-        public ItemStatus GetStatusForItem(string itemId)
+        public async Task<ItemStatus> GetStatusForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/status", Method.GET);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -129,12 +132,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public IEnumerable<Fee> ListFeesForItem(string itemId)
+        public async Task<IEnumerable<Fee>> ListFeesForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/fees", Method.GET);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("fees"))
             {
@@ -144,12 +147,12 @@ namespace PromisePayDotNet.Implementations
             return new List<Fee>();
         }
 
-        public User GetBuyerForItem(string itemId)
+        public async Task<User> GetBuyerForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/buyers", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))
             {
@@ -159,12 +162,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public User GetSellerForItem(string itemId)
+        public async Task<User> GetSellerForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/sellers", Method.GET);
             request.AddUrlSegment("id", itemId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))
             {
@@ -174,12 +177,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public WireDetails GetWireDetailsForItem(string itemId)
+        public async Task<WireDetails> GetWireDetailsForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/wire_details", Method.GET);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -190,12 +193,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public BPayDetails GetBPayDetailsForItem(string itemId)
+        public async Task<BPayDetails> GetBPayDetailsForItemAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/{id}/bpay_details", Method.GET);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -206,14 +209,14 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item MakePayment(string itemId, string accountId)
+        public async Task<Item> MakePaymentAsync(string itemId, string accountId)
         {
             AssertIdNotNull(itemId);
             AssertIdNotNull(accountId);
             var request = new RestRequest("/items/:id/make_payment", Method.PATCH);
             request.AddUrlSegment("id", itemId);
             request.AddParameter("account_id", accountId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -224,12 +227,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item RequestPayment(string itemId)
+        public async Task<Item> RequestPaymentAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/request_payment", Method.PATCH);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -240,13 +243,13 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item ReleasePayment(string itemId, int releaseAmount)
+        public async Task<Item> ReleasePaymentAsync(string itemId, int releaseAmount)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/release_payment", Method.PATCH);
             request.AddUrlSegment("id", itemId);
             request.AddParameter("release_amount", releaseAmount);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -257,13 +260,13 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item RequestRelease(string itemId, int releaseAmount)
+        public async Task<Item> RequestReleaseAsync(string itemId, int releaseAmount)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/request_release", Method.PATCH);
             request.AddUrlSegment("id", itemId);
             request.AddParameter("release_amount", releaseAmount);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -274,12 +277,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item Cancel(string itemId)
+        public async Task<Item> CancelAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/cancel", Method.PATCH);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -290,12 +293,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item AcknowledgeWire(string itemId)
+        public async Task<Item> AcknowledgeWireAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/acknowledge_wire", Method.PATCH);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -306,12 +309,13 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item AcknowledgePayPal(string itemId)
+        public async Task<Item> AcknowledgePayPalAsync(string itemId)
         {
+            //NOTE: Not documented!
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/acknowledge_paypal", Method.PATCH);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -322,12 +326,12 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item RevertWire(string itemId)
+        public async Task<Item> RevertWireAsync(string itemId)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/revert_wire", Method.PATCH);
             request.AddUrlSegment("id", itemId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -338,14 +342,14 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item RequestRefund(string itemId, string refundAmount, string refundMessage)
+        public async Task<Item> RequestRefundAsync(string itemId, string refundAmount, string refundMessage)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/request_refund", Method.PATCH);
             request.AddUrlSegment("id", itemId);
             request.AddParameter("refund_amount", refundAmount);
             request.AddParameter("refund_message", refundMessage);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {
@@ -356,14 +360,14 @@ namespace PromisePayDotNet.Implementations
             return null;
         }
 
-        public Item Refund(string itemId, string refundAmount, string refundMessage)
+        public async Task<Item> RefundAsync(string itemId, string refundAmount, string refundMessage)
         {
             AssertIdNotNull(itemId);
             var request = new RestRequest("/items/:id/refund", Method.PATCH);
             request.AddUrlSegment("id", itemId);
             request.AddParameter("refund_amount", refundAmount);
             request.AddParameter("refund_message", refundMessage);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("items"))
             {

@@ -1,21 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PromisePayDotNet.DTO;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class CardAccountRepository : AbstractRepository, ICardAccountRepository
+    internal class CardAccountRepository : AbstractRepository, ICardAccountRepository
     {
-        public CardAccountRepository(IRestClient client) : base(client)
+        public CardAccountRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<CardAccountRepository>(), options)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         public CardAccount GetCardAccountById(string cardAccountId)
         {
             AssertIdNotNull(cardAccountId);
@@ -57,7 +57,7 @@ namespace PromisePayDotNet.Implementations
             AssertIdNotNull(cardAccountId);
             var request = new RestRequest("/card_accounts/{id}/users", Method.GET);
             request.AddUrlSegment("id", cardAccountId);
-            IRestResponse response = SendRequest(Client, request);
+            RestResponse response = SendRequest(Client, request);
 
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("users"))
