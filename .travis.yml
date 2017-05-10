@@ -8,7 +8,7 @@ os:
   - linux
 script: 
   - dotnet restore
-  - dotnet build PromisePayDotNet
-  - dotnet build PromisePayDotNet.Tests
+  - dotnet build PromisePayDotNet /p:TargetFrameworkRootPath=/usr/lib/mono/xbuild-frameworks
+  - dotnet build PromisePayDotNet.Tests /p:TargetFrameworkRootPath=/usr/lib/mono/xbuild-frameworks
   - cd PromisePayDotNet.Tests
-  - dotnet test 
+  - dotnet test /p:TargetFrameworkRootPath=/usr/lib/mono/xbuild-frameworks
