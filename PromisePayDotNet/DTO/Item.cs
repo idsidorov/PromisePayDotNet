@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PromisePayDotNet.DTO
+namespace PromisePayDotNet.Dto
 {
     public class Item : AbstractDTO
     {
@@ -25,7 +25,9 @@ namespace PromisePayDotNet.DTO
 
         [JsonProperty(PropertyName = "status")]
         public int Status { get; set; }
-
+        /// <summary>
+        /// The cost in cents
+        /// </summary>
         [JsonProperty(PropertyName = "amount")]
         public int Amount { get; set; }
 

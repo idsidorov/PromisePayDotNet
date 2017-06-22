@@ -1,1 +1,15 @@
-﻿{"fees":{"id":"dcbe3dde-b01b-4a54-8177-fd3ebe9123f6","created_at":"2015-08-08T19:08:15.095Z","updated_at":"2015-08-08T19:08:15.095Z","name":"Test fee #1","fee_type_id":1,"amount":1000,"cap":1,"min":2,"max":3,"to":"buyer","links":{"self":"/fees/dcbe3dde-b01b-4a54-8177-fd3ebe9123f6"}}}
+﻿{
+  "fees": {
+    "id": "dcbe3dde-b01b-4a54-8177-fd3ebe9123f6",
+    "created_at": "2015-08-08T19:08:15.095Z",
+    "updated_at": "2015-08-08T19:08:15.095Z",
+    "name": "Test fee #1",
+    "fee_type_id": 1,
+    "amount": 1000,
+    "cap": 1,
+    "min": 2,
+    "max": 3,
+    "to": "buyer",
+    "links": { "self": "/fees/dcbe3dde-b01b-4a54-8177-fd3ebe9123f6" }
+  }
+}

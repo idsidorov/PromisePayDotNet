@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PromisePayDotNet.DTO
+namespace PromisePayDotNet.Dto
 {
     public class PayPalAccount : AbstractAccount
     {

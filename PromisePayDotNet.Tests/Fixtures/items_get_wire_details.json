@@ -1,1 +1,20 @@
-﻿{"items":{"id":"7c269f52-2236-4aa5-899e-a2e3ecadbc3f","wire_details":{"beneficiary":"PromisePay","address_line1":"500 Bourke Street","city":"Melbourne","state":"VIC","zip":"3000","BSB":"083001","account_number":"844144573","bank_name":"National Australia Bank","swift":"NATAAU3303M","reference":"9140139367","amount":"$10.00","currency":"AUD"}}}
+﻿{
+  "items": {
+    "id": "7c269f52-2236-4aa5-899e-a2e3ecadbc3f",
+    "wire_details": {
+      "beneficiary": "PromisePay",
+      "address_line1": "500 Bourke Street",
+      "city": "Melbourne",
+      "state": "VIC",
+      "zip": "3000",
+      "BSB": "083001",
+      "account_number": "844144573",
+      "bank_name": "National Australia Bank",
+      "swift": "NATAAU3303M",
+      "reference": "9140139367",
+      "amount": "$10.00",
+      "currency": "AUD",
+      "country": "Australia"
+    }
+  }
+}

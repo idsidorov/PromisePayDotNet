@@ -1,26 +1,29 @@
-﻿using Newtonsoft.Json;
-using PromisePayDotNet.DTO;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PromisePayDotNet.Dto;
 using PromisePayDotNet.Exceptions;
-using PromisePayDotNet.Interfaces;
-using RestSharp;
+using PromisePayDotNet.Abstractions;
+using PromisePayDotNet.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
+using PromisePayDotNet.Enums;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class FeeRepository : AbstractRepository, IFeeRepository
+    internal class FeeRepository : AbstractRepository, IFeeRepository
     {
-        public FeeRepository(IRestClient client) : base(client)
+        public FeeRepository(IRestClient client, ILoggerFactory loggerFactory, IOptions<Settings.PromisePaySettings> options)
+            : base(client, loggerFactory.CreateLogger<FeeRepository>(), options)
         {
         }
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public IEnumerable<Fee> ListFees()
+        public async Task<IEnumerable<Fee>> ListFeesAsync()
         {
             var request = new RestRequest("/fees", Method.GET);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
             if (dict.ContainsKey("fees"))
             {
@@ -30,41 +33,68 @@ namespace PromisePayDotNet.Implementations
             return new List<Fee>();
         }
 
-        public Fee GetFeeById(string feeId)
+        public async Task<Fee> GetFeeByIdAsync(string feeId)
         {
             AssertIdNotNull(feeId);
             var request = new RestRequest("/fees/{id}", Method.GET);
             request.AddUrlSegment("id", feeId);
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Fee>>(response.Content).Values.First();
         }
 
-        public Fee CreateFee(Fee fee)
+        class CreateFeeRequest
+        {
+            [JsonProperty(PropertyName = "name")]
+            public string Name { get; set; }
+
+            [JsonProperty(PropertyName = "fee_type_id")]
+            public int FeeType { get; set; }
+
+            [JsonProperty(PropertyName = "amount")]
+            public int Amount { get; set; }
+
+            [JsonProperty(PropertyName = "cap")]
+            public string Cap { get; set; }
+
+            [JsonProperty(PropertyName = "min")]
+            public string Min { get; set; }
+
+            [JsonProperty(PropertyName = "max")]
+            public string Max { get; set; }
+
+            [JsonProperty(PropertyName = "to")]
+            public FeeToType To { get; set; }
+        }
+
+        public async Task<Fee> CreateFeeAsync(Fee fee)
         {
             VailidateFee(fee);
-            var request = new RestRequest("/fees", Method.POST);
-            request.AddParameter("name", fee.Name);
-            request.AddParameter("fee_type_id", (int)fee.FeeType);
-            request.AddParameter("amount", fee.Amount);
-            request.AddParameter("cap", fee.Cap);
-            request.AddParameter("min", fee.Min);
-            request.AddParameter("max", fee.Max);
-            request.AddParameter("to", fee.To);
+            var request = new RestRequest("/fees", Method.POST, new CreateFeeRequest {
+                Name = fee.Name,
+                Amount = fee.Amount,
+                Cap = fee.Cap,
+                FeeType = (int)fee.FeeType,
+                Max =fee.Max,
+                Min = fee.Min,
+                To = fee.To
+            });
 
-            var response = SendRequest(Client, request);
+            var response = await SendRequestAsync(Client, request);
             return JsonConvert.DeserializeObject<IDictionary<string, Fee>>(response.Content).Values.First();
         }
 
         private void VailidateFee(Fee fee)
         {
-            if (fee == null) throw new ArgumentNullException("fee");
+            if (fee == null) throw new ArgumentNullException(nameof(fee));
             if (!_possibleTos.Contains(fee.To))
             {
                 throw new ValidationException(
-                    "To should have value of \"buyer\", \"seller\", \"cc\", \"int_wire\", \"paypal_payout\"");
+                    "To should have value of "+string.Join(", ", _possibleTos.Select(to=> $"\"{FeeToJsonConverter.ToString(to)}\"")));
             }
         }
 
-        private readonly List<string> _possibleTos = new List<string> {"buyer", "seller", "cc", "int_wire", "paypal_payout"};
+        private readonly List<FeeToType> _possibleTos = new List<FeeToType> { 
+               FeeToType.Buyer, FeeToType.Seller, FeeToType.CC, FeeToType.IntWire, FeeToType.PaypalPayout 
+        };
     }
 }

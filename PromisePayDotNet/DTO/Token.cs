@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using PromisePayDotNet.Enums;
 
-namespace PromisePayDotNet.DTO
+namespace PromisePayDotNet.Dto
 {
-    public class Token
+    public class Token //NOTE: Why is this called token?
     {
         [JsonProperty(PropertyName = "current_user_id")]
         public string CurrentUserId { get; set; }

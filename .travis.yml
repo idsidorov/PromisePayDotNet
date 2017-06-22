@@ -1,9 +1,14 @@
-sudo: false
+sudo: required
 language: csharp
-solution: PromisePayDotNet.sln
-install:
-  - nuget restore PromisePayDotNet.sln
-  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
-script:
-  - xbuild /p:Configuration=Release PromisePayDotNet.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./PromisePayDotNet.Tests/bin/Release/PromisePayDotNet.Tests.dll
+dotnet: 1.0.3
+mono:
+  - 4.8.0
+dist: trusty
+os:
+  - linux
+script: 
+  - dotnet restore
+  - dotnet build PromisePayDotNet
+  - dotnet build PromisePayDotNet.Tests
+  - cd PromisePayDotNet.Tests
+  - dotnet test 

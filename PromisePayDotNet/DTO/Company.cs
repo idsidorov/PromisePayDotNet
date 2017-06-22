@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace PromisePayDotNet.DTO
+namespace PromisePayDotNet.Dto
 {
     public class Company : AbstractDTO
     {

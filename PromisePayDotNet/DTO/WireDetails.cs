@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PromisePayDotNet.DTO
+namespace PromisePayDotNet.Dto
 {
     public class WireDetails
     {
@@ -39,5 +39,8 @@ namespace PromisePayDotNet.DTO
 
         [JsonProperty(PropertyName = "currency")]
         public string Currency { get; set; }
+
+        [JsonProperty(PropertyName = "country")]
+        public string Country { get; set; }
     }
 }
