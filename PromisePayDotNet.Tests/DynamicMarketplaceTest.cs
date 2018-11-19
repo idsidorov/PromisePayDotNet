@@ -11,10 +11,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/marketplaces_show.json");
+            var content = File.ReadAllText("./Fixtures/marketplaces_show.json");
             var client = GetMockClient(content);
 
-            var repo = new MarketplaceRepository(client.Object);
+            var repo = new MarketplaceRepository(client.Object, GetMockSettings().Object, GetMockLogger<MarketplaceRepository>().Object);
             var response = repo.ShowMarketplace();
             client.VerifyAll();
 

@@ -25,10 +25,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreateFeeSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/fees_create.json");
+            var content = File.ReadAllText("./Fixtures/fees_create.json");
             var client = GetMockClient(content);
 
-            var repo = new FeeRepository(client.Object);
+            var repo = new FeeRepository(client.Object, GetMockSettings().Object, GetMockLogger<FeeRepository>().Object);
             var feeId = Guid.NewGuid().ToString();
             var createdFee = repo.CreateFee(new Fee
             {
@@ -49,7 +49,7 @@ namespace PromisePayDotNet.Tests
         {
             var client = GetMockClient("");
 
-            var repo = new FeeRepository(client.Object);
+            var repo = new FeeRepository(client.Object, GetMockSettings().Object, GetMockLogger<FeeRepository>().Object);
             var feeId = Guid.NewGuid().ToString();
             Assert.Throws<ValidationException>(() => repo.CreateFee(new Fee
             {
@@ -66,10 +66,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void GetFeeByIdSuccessfull()
         {
-            var content = File.ReadAllText("../../Fixtures/fees_get_by_id.json");
+            var content = File.ReadAllText("./Fixtures/fees_get_by_id.json");
             var client = GetMockClient(content);
 
-            var repo = new FeeRepository(client.Object);
+            var repo = new FeeRepository(client.Object, GetMockSettings().Object, GetMockLogger<FeeRepository>().Object);
             const string id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
             var fee = repo.GetFeeById(id);
             Assert.AreEqual(id, fee.Id);
@@ -78,10 +78,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ListFeeSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/fees_list.json");
+            var content = File.ReadAllText("./Fixtures/fees_list.json");
             var client = GetMockClient(content);
 
-            var repo = new FeeRepository(client.Object);
+            var repo = new FeeRepository(client.Object, GetMockSettings().Object, GetMockLogger<FeeRepository>().Object);
             var fees = repo.ListFees();
             Assert.IsNotNull(fees);
             Assert.IsTrue(fees.Any());

@@ -2,14 +2,15 @@
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class RestrictionRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IRestrictionRepository
     {
-        public RestrictionRepository(IRestClient client)
-            : base(client)
+        public RestrictionRepository(IRestClient client, ISettings settings, ILogger<RestrictionRepository> logger) : base(client, settings, logger)
         {
         }
 

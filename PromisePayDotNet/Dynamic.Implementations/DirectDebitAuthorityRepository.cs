@@ -1,14 +1,15 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
 using System.Collections.Generic;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class DirectDebitAuthorityRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                                   PromisePayDotNet.Dynamic.Interfaces.IDirectDebitAuthorityRepository
     {
-        public DirectDebitAuthorityRepository(IRestClient client)
-            : base(client)
+        public DirectDebitAuthorityRepository(IRestClient client, ISettings settings, ILogger<DirectDebitAuthorityRepository> logger) : base(client, settings, logger)
         {
         }
 

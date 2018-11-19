@@ -3,18 +3,17 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class BankAccountRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IBankAccountRepository
     {
-        public BankAccountRepository(IRestClient client)
-            : base(client)
+        public BankAccountRepository(IRestClient client, ISettings settings, ILogger<BankAccountRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IDictionary<string, object> GetBankAccountById(string bankAccountId)
         {

@@ -5,13 +5,13 @@ using RestSharp;
 
 namespace PromisePayDotNet.Tests
 {
-    public class TokenTest
+    public class TokenTest : AbstractTest
     {
         [Test]
         [Ignore("it seems I have created a token already, so it return error")]
         public void RequestToken()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var token = repo.RequestToken();
         }
 
@@ -19,7 +19,7 @@ namespace PromisePayDotNet.Tests
         [Ignore("Not implemented yet")]
         public void RequestSessionToken()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var result = repo.RequestSessionToken(new Token
             {
                 CurrentUserId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c",
@@ -41,7 +41,7 @@ namespace PromisePayDotNet.Tests
         [Ignore("Not implemented yet")]
         public void Widget()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var widget = repo.GetWidget("aaa-bbb-cc");
         }
     }

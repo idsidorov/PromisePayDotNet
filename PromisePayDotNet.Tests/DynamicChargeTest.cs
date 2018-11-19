@@ -14,10 +14,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ListChargesSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/charges_list.json");
+            var content = File.ReadAllText("./Fixtures/charges_list.json");
             var client = GetMockClient(content);
 
-            var repo = new ChargeRepository(client.Object);
+            var repo = new ChargeRepository(client.Object, GetMockSettings().Object, GetMockLogger<ChargeRepository>().Object);
             var charges = repo.ListCharges();
             client.VerifyAll();
 
@@ -27,10 +27,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreateChargeSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/charges_create.json");
+            var content = File.ReadAllText("./Fixtures/charges_create.json");
             var client = GetMockClient(content);
 
-            var repo = new ChargeRepository(client.Object);
+            var repo = new ChargeRepository(client.Object, GetMockSettings().Object, GetMockLogger<ChargeRepository>().Object);
             var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
             var charge = new Dictionary<string, object>
             {
@@ -62,9 +62,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowChargeSuccessful()
         {
-            var content = File.ReadAllText("../../Fixtures/charges_show.json");
+            var content = File.ReadAllText("./Fixtures/charges_show.json");
             var client = GetMockClient(content);
-            var repo = new ChargeRepository(client.Object);
+            var repo = new ChargeRepository(client.Object, GetMockSettings().Object, GetMockLogger<ChargeRepository>().Object);
             var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
 
             var response = repo.ShowCharge(id);
@@ -77,9 +77,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowChargeBuyerSuccessful()
         {
-            var content = File.ReadAllText("../../Fixtures/charges_show_buyer.json");
+            var content = File.ReadAllText("./Fixtures/charges_show_buyer.json");
             var client = GetMockClient(content);
-            var repo = new ChargeRepository(client.Object);
+            var repo = new ChargeRepository(client.Object, GetMockSettings().Object, GetMockLogger<ChargeRepository>().Object);
             var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
             var buyerId = "1be7f54f-c09f-4298-a665-f3a9f1dac60c";
 
@@ -93,9 +93,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowChargeBuyerStatus()
         {
-            var content = File.ReadAllText("../../Fixtures/charges_show_status.json");
+            var content = File.ReadAllText("./Fixtures/charges_show_status.json");
             var client = GetMockClient(content);
-            var repo = new ChargeRepository(client.Object);
+            var repo = new ChargeRepository(client.Object, GetMockSettings().Object, GetMockLogger<ChargeRepository>().Object);
             var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
 
             var response = repo.ShowChargeStatus(id);

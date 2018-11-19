@@ -3,18 +3,17 @@ using PromisePayDotNet.Exceptions;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class FeeRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IFeeRepository
     {
-        public FeeRepository(IRestClient client)
-            : base(client)
+        public FeeRepository(IRestClient client, ISettings settings, ILogger<FeeRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region public methods
         public IDictionary<string,object> ListFees()

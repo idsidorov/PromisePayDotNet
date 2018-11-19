@@ -2,14 +2,15 @@
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class BatchTransactionRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                               PromisePayDotNet.Dynamic.Interfaces.IBatchTransactionRepository
     {
-        public BatchTransactionRepository(IRestClient client)
-            : base(client)
+        public BatchTransactionRepository(IRestClient client, ISettings settings, ILogger<BatchTransactionRepository> logger) : base(client, settings, logger)
         {
 
         }

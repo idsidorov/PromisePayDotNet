@@ -22,9 +22,9 @@ namespace PromisePayDotNet.Tests
         public void ListTransactionsSuccessful()
         {
             //First, create a user, so we'll have at least one 
-            var content = File.ReadAllText("../../Fixtures/transactions_list.json");
+            var content = File.ReadAllText("./Fixtures/transactions_list.json");
             var client = GetMockClient(content);
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             //Then, list users
             var transactions = repo.ListTransactions(200);
             Assert.IsNotNull(transactions);
@@ -35,7 +35,7 @@ namespace PromisePayDotNet.Tests
         {
             
             var client = GetMockClient("");
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             Assert.Throws<ArgumentException>(() => repo.ListTransactions(-10, -20));
         }
 
@@ -43,7 +43,7 @@ namespace PromisePayDotNet.Tests
         public void ListTransactionsTooHighLimit()
         {
             var client = GetMockClient("");
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             Assert.Throws<ArgumentException>(() => repo.ListTransactions(201));
         }
     }

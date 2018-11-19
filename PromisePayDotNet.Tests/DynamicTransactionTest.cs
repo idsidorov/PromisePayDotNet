@@ -22,9 +22,9 @@ namespace PromisePayDotNet.Tests
         public void ListTransactionsSuccessful()
         {
             //First, create a user, so we'll have at least one 
-            var content = File.ReadAllText("../../Fixtures/transactions_list.json");
+            var content = File.ReadAllText("./Fixtures/transactions_list.json");
             var client = GetMockClient(content);
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             //Then, list users
             var transactions = repo.ListTransactions(200);
             Assert.IsNotNull(transactions);
@@ -35,7 +35,7 @@ namespace PromisePayDotNet.Tests
         {
 
             var client = GetMockClient("");
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             Assert.Throws<ArgumentException>(() => repo.ListTransactions(-10, -20));
         }
 
@@ -43,16 +43,16 @@ namespace PromisePayDotNet.Tests
         public void ListTransactionsTooHighLimit()
         {
             var client = GetMockClient("");
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
             Assert.Throws<ArgumentException>(() => repo.ListTransactions(201));
         }
 
         [Test]
         public void ShowTransactionWalletAccount() 
         {
-            var content = File.ReadAllText("../../Fixtures/transactions_show_wallet_account.json");
+            var content = File.ReadAllText("./Fixtures/transactions_show_wallet_account.json");
             var client = GetMockClient(content);
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
 
             var response = repo.ShowTransactionWalletAccount("100fd4a0-0538-11e6-b512-3e1d05defe78");
             client.VerifyAll();
@@ -65,9 +65,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowTransactionBankAccount()
         {
-            var content = File.ReadAllText("../../Fixtures/transactions_show_bank_account.json");
+            var content = File.ReadAllText("./Fixtures/transactions_show_bank_account.json");
             var client = GetMockClient(content);
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
 
             var response = repo.ShowTransactionBankAccount("100fd4a0-0538-11e6-b512-3e1d05defe78");
             client.VerifyAll();
@@ -80,9 +80,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowTransactionCardAccount()
         {
-            var content = File.ReadAllText("../../Fixtures/transactions_show_card_account.json");
+            var content = File.ReadAllText("./Fixtures/transactions_show_card_account.json");
             var client = GetMockClient(content);
-            var repo = new TransactionRepository(client.Object);
+            var repo = new TransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<TransactionRepository>().Object);
 
             var response = repo.ShowTransactionCardAccount("100fd4a0-0538-11e6-b512-3e1d05defe78");
             client.VerifyAll();
@@ -93,7 +93,7 @@ namespace PromisePayDotNet.Tests
         }
 
         [Test]
-        [Ignore]
+        [Ignore("No reason")]
         public void ShowTransactionPayPalAccount()
         {
             Assert.Fail("No fixture yet!");

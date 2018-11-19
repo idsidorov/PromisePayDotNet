@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class WalletRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                     PromisePayDotNet.Dynamic.Interfaces.IWalletRepository
     {
-        public WalletRepository(IRestClient client)
-            : base(client)
+        public WalletRepository(IRestClient client, ISettings settings, ILogger<WalletRepository> logger) : base(client, settings, logger)
         {
         }
 

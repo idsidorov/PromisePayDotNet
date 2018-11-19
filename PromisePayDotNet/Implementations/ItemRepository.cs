@@ -6,16 +6,16 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
     public class ItemRepository : AbstractRepository, IItemRepository
     {
-        public ItemRepository(IRestClient client) : base(client)
+        public ItemRepository(IRestClient client, ISettings settings, ILogger<ItemRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<Item> ListItems(int limit = 10, int offset = 0)
         {

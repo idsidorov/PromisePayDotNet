@@ -12,10 +12,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreateSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/direct_debit_authorities_create.json");
+            var content = File.ReadAllText("./Fixtures/direct_debit_authorities_create.json");
 
             var client = GetMockClient(content);
-            var repo = new DirectDebitAuthorityRepository(client.Object);
+            var repo = new DirectDebitAuthorityRepository(client.Object, GetMockSettings().Object, GetMockLogger<DirectDebitAuthorityRepository>().Object);
             var resp = repo.Create("9fda18e7-b1d3-4a83-830d-0cef0f62cd25", "100000");
             client.VerifyAll();
             Assert.IsNotNull(resp);
@@ -26,10 +26,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ListSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/direct_debit_authorities_list.json");
+            var content = File.ReadAllText("./Fixtures/direct_debit_authorities_list.json");
 
             var client = GetMockClient(content);
-            var repo = new DirectDebitAuthorityRepository(client.Object);
+            var repo = new DirectDebitAuthorityRepository(client.Object, GetMockSettings().Object, GetMockLogger<DirectDebitAuthorityRepository>().Object);
             var resp = repo.List("9fda18e7-b1d3-4a83-830d-0cef0f62cd25");
             client.VerifyAll();
             Assert.IsNotNull(resp);
@@ -40,10 +40,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/direct_debit_authorities_show.json");
+            var content = File.ReadAllText("./Fixtures/direct_debit_authorities_show.json");
 
             var client = GetMockClient(content);
-            var repo = new DirectDebitAuthorityRepository(client.Object);
+            var repo = new DirectDebitAuthorityRepository(client.Object, GetMockSettings().Object, GetMockLogger<DirectDebitAuthorityRepository>().Object);
             var resp = repo.Show("8f233e04-ffaa-4c9d-adf9-244853848e21");
             client.VerifyAll();
             Assert.IsNotNull(resp);
@@ -54,10 +54,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void DeleteSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/direct_debit_authorities_delete.json");
+            var content = File.ReadAllText("./Fixtures/direct_debit_authorities_delete.json");
 
             var client = GetMockClient(content);
-            var repo = new DirectDebitAuthorityRepository(client.Object);
+            var repo = new DirectDebitAuthorityRepository(client.Object, GetMockSettings().Object, GetMockLogger<DirectDebitAuthorityRepository>().Object);
             var resp = repo.Delete("9fda18e7-b1d3-4a83-830d-0cef0f62cd25");
             client.VerifyAll();
             Assert.IsNull(resp);

@@ -4,14 +4,15 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class ConfigurationRepository : PromisePayDotNet.Implementations.AbstractRepository,
         PromisePayDotNet.Dynamic.Interfaces.IConfigurationRepository
     {
-        public ConfigurationRepository(IRestClient client)
-            : base(client)
+        public ConfigurationRepository(IRestClient client, ISettings settings, ILogger<ConfigurationRepository> logger) : base(client, settings, logger)
         {
         }
 

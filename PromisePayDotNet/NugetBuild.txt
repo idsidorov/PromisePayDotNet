@@ -1,4 +1,1 @@
-﻿This command should be run in Nuget Console
-
-
-nuget pack PromisePayDotNet\PromisePayDotNet.csproj -Prop Configuration=Release
+﻿dotnet pack -c Release

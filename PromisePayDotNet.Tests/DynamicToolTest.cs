@@ -12,9 +12,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void HealthCheckSuccessful()
         {
-            var content = File.ReadAllText("../../Fixtures/tool_health_status.json");
+            var content = File.ReadAllText("./Fixtures/tool_health_status.json");
             var client = GetMockClient(content);
-            var repo = new ToolRepository(client.Object);
+            var repo = new ToolRepository(client.Object, GetMockSettings().Object, GetMockLogger<ToolRepository>().Object);
             var response = repo.HealthCheck();
             client.VerifyAll();
             Assert.IsNotNull(response);

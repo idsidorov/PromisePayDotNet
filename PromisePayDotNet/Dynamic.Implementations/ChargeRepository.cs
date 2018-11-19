@@ -2,14 +2,15 @@
 using PromisePayDotNet.Exceptions;
 using RestSharp;
 using System.Collections.Generic;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class ChargeRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.IChargeRepository
     {
-        public ChargeRepository(IRestClient client)
-            : base(client)
+        public ChargeRepository(IRestClient client, ISettings settings, ILogger<ChargeRepository> logger) : base(client, settings, logger)
         {
         }
 

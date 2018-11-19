@@ -3,18 +3,17 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Dynamic.Implementations
 {
     public class TransactionRepository : PromisePayDotNet.Implementations.AbstractRepository,
                                          PromisePayDotNet.Dynamic.Interfaces.ITransactionRepository
     {
-        public TransactionRepository(IRestClient client)
-            : base(client)
+        public TransactionRepository(IRestClient client, ISettings settings, ILogger<TransactionRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IDictionary<string,object> ListTransactions(int limit = 10, int offset = 0)
         {

@@ -6,16 +6,16 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
     public class FeeRepository : AbstractRepository, IFeeRepository
     {
-        public FeeRepository(IRestClient client) : base(client)
+        public FeeRepository(IRestClient client, ISettings settings, ILogger<FeeRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<Fee> ListFees()
         {

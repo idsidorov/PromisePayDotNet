@@ -21,11 +21,11 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void GetAddressSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/address_get_by_id.json");
+            var content = File.ReadAllText("./Fixtures/address_get_by_id.json");
 
             var client = GetMockClient(content);
 
-            var repo = new AddressRepository(client.Object);
+            var repo = new AddressRepository(client.Object, GetMockSettings().Object, GetMockLogger<AddressRepository>().Object);
 
             var resp = repo.GetAddressById("07ed45e5-bb9d-459f-bb7b-a02ecb38f443");
             client.VerifyAll();

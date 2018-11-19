@@ -7,16 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
     public class UserRepository : AbstractRepository, IUserRepository
     {
-        public UserRepository(IRestClient client) : base(client)
+        public UserRepository(IRestClient client, ISettings settings, ILogger<UserRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region public methods
 

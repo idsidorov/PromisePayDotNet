@@ -15,10 +15,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/wallets_show.json");
+            var content = File.ReadAllText("./Fixtures/wallets_show.json");
             var client = GetMockClient(content);
 
-            var repo = new WalletRepository(client.Object);
+            var repo = new WalletRepository(client.Object, GetMockSettings().Object, GetMockLogger<WalletRepository>().Object);
             var response = repo.ShowWalletAccount("385b50bb-237a-42cb-9382-22953e191ae6");
             client.VerifyAll();
 
@@ -30,10 +30,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void WithdrawSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/wallets_withdraw_funds.json");
+            var content = File.ReadAllText("./Fixtures/wallets_withdraw_funds.json");
             var client = GetMockClient(content);
 
-            var repo = new WalletRepository(client.Object);
+            var repo = new WalletRepository(client.Object, GetMockSettings().Object, GetMockLogger<WalletRepository>().Object);
             var response = repo.WithdrawFunds("385b50bb-237a-42cb-9382-22953e191ae6");
             client.VerifyAll();
 
@@ -45,10 +45,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void DepositSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/wallets_deposit_funds.json");
+            var content = File.ReadAllText("./Fixtures/wallets_deposit_funds.json");
             var client = GetMockClient(content);
 
-            var repo = new WalletRepository(client.Object);
+            var repo = new WalletRepository(client.Object, GetMockSettings().Object, GetMockLogger<WalletRepository>().Object);
             var response = repo.WithdrawFunds("385b50bb-237a-42cb-9382-22953e191ae6");
             client.VerifyAll();
 
@@ -60,10 +60,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowWalletAccountUserSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/wallets_show_user_account.json");
+            var content = File.ReadAllText("./Fixtures/wallets_show_user_account.json");
             var client = GetMockClient(content);
 
-            var repo = new WalletRepository(client.Object);
+            var repo = new WalletRepository(client.Object, GetMockSettings().Object, GetMockLogger<WalletRepository>().Object);
             var response = repo.ShowWalletAccountUser("385b50bb-237a-42cb-9382-22953e191ae6");
             client.VerifyAll();
 

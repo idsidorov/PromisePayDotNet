@@ -3,6 +3,8 @@ using RestSharp;
 using RestSharp.Authenticators;
 using System;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Tests
 {
@@ -26,6 +28,20 @@ namespace PromisePayDotNet.Tests
             client.SetupSet(x => x.Authenticator = It.IsAny<IAuthenticator>());
             client.Setup(x => x.Execute(It.IsAny<IRestRequest>())).Returns(response.Object);
             return client;
+        }
+
+        protected Mock<ISettings> GetMockSettings()
+        {
+            var mock = new Mock<ISettings>();
+            mock.Setup(m => m.Url).Returns("https://test.api.promisepay.com");
+            mock.Setup(m => m.Login).Returns("idsidorov@gmail.com");
+            mock.Setup(m => m.Password).Returns("mJrUGo2Vxuo9zqMVAvkw");
+            return mock;
+        }
+
+        protected Mock<ILogger<T>> GetMockLogger<T>()
+        {
+            return new Mock<ILogger<T>>();
         }
 
     }

@@ -12,10 +12,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ListTest() 
         {
-            var content = File.ReadAllText("../../Fixtures/batch_list.json");
+            var content = File.ReadAllText("./Fixtures/batch_list.json");
 
             var client = GetMockClient(content);
-            var repo = new BatchTransactionRepository(client.Object);
+            var repo = new BatchTransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<BatchTransactionRepository>().Object);
 
             var response = repo.List();
             client.VerifyAll();
@@ -27,10 +27,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ShowTest()
         {
-            var content = File.ReadAllText("../../Fixtures/batch_show.json");
+            var content = File.ReadAllText("./Fixtures/batch_show.json");
 
             var client = GetMockClient(content);
-            var repo = new BatchTransactionRepository(client.Object);
+            var repo = new BatchTransactionRepository(client.Object, GetMockSettings().Object, GetMockLogger<BatchTransactionRepository>().Object);
             const string id = "b1652611-9544-4244-a601-54c24cfa5e90";
             var response = repo.Show(id);
             client.VerifyAll();

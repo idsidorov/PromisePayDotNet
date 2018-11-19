@@ -14,7 +14,7 @@ namespace PromisePayDotNet.Tests
         [Ignore("it seems I have created a token already, so it return error")]
         public void RequestToken()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var token = repo.RequestToken();
         }
 
@@ -22,7 +22,7 @@ namespace PromisePayDotNet.Tests
         [Ignore("Not implemented yet")]
         public void RequestSessionToken()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var result = repo.RequestSessionToken(new Dictionary<string,object>
             {
                 {"current_user_id" , "ec9bf096-c505-4bef-87f6-18822b9dbf2c"},
@@ -44,17 +44,17 @@ namespace PromisePayDotNet.Tests
         [Ignore("Not implemented yet")]
         public void Widget()
         {
-            var repo = new TokenRepository(new RestClient());
+            var repo = new TokenRepository(new RestClient(), GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var widget = repo.GetWidget("aaa-bbb-cc");
         }
 
         [Test]
         public void GenerateCardToken()
         {
-            var content = File.ReadAllText("../../Fixtures/generate_card_token.json");
+            var content = File.ReadAllText("./Fixtures/generate_card_token.json");
 
             var client = GetMockClient(content);
-            var repo = new TokenRepository(client.Object);
+            var repo = new TokenRepository(client.Object, GetMockSettings().Object, GetMockLogger<TokenRepository>().Object);
             var resp = repo.GenerateCardToken("card", "064d6800-fff3-11e5-86aa-5e5517507c66");
             var token = JsonConvert.DeserializeObject<IDictionary<string, object>>(JsonConvert.SerializeObject(resp["token_auth"]));
             Assert.AreEqual("card", token["token_type"]);

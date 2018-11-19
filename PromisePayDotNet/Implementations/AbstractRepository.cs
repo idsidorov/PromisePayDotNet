@@ -8,114 +8,51 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
-    public class AbstractRepository
+    public abstract class AbstractRepository
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         protected const int EntityListLimit = 200;
 
-        protected IRestClient Client;
+        protected IRestClient Client { get; }
 
-        public AbstractRepository(IRestClient client)
+        protected ILogger Logger { get; }
+
+        public AbstractRepository(IRestClient client, ISettings settings, ILogger logger)
         {
-            this.Client = client;
-            client.BaseUrl = new Uri(BaseUrl);
-            client.Authenticator = new HttpBasicAuthenticator(Login, Password);
-        }
-
-        private Hashtable Configurataion
-        {
-            get
-            {
-                return ConfigurationManager.GetSection("PromisePay/Settings") as Hashtable;
-            }
-        }
-
-        protected string BaseUrl
-        {
-            get
-            {
-                var baseUrl = ConfigurationManager.AppSettings["PromisePayApiUrl"] as String;
-                if (baseUrl == null && (Configurataion != null))
-                {
-                    baseUrl = Configurataion["ApiUrl"] as String;                    
-                }
-                if (baseUrl == null)
-                {
-                    log.Fatal("Unable to get URL info from config file");
-                    throw new MisconfigurationException("Unable to get URL info from config file");
-                }
-                
-                return baseUrl;
-            }
-        }
-
-        protected string Login
-        {
-            get
-            {
-                var login = ConfigurationManager.AppSettings["PromisePayLogin"] as String;
-                if (login == null && (Configurataion != null))
-                {
-                    login = Configurataion["Login"] as String;
-                }
-                if (login == null)
-                {
-                    log.Fatal("Unable to get Login info from config file");
-                    throw new MisconfigurationException("Unable to get URL info from config file");
-                }
-
-                return login;
-              
-            }
-        }
-
-        public string Password
-        {
-            get
-            {
-                var password = ConfigurationManager.AppSettings["PromisePayPassword"] as String;
-                if (password == null && (Configurataion != null))
-                {
-                    password = Configurataion["Password"] as String;
-                }
-                if (password == null)
-                {
-                    log.Fatal("Unable to get Password info from config file");
-                    throw new MisconfigurationException("Unable to get URL info from config file");
-                }
-
-                return password;
-            }
+            Client = client;
+            Logger = logger;
+            client.BaseUrl = new Uri(settings.Url);
+            client.Authenticator = new HttpBasicAuthenticator(settings.Login, settings.Password);
         }
 
         protected IRestResponse SendRequest(IRestClient client, IRestRequest request)
         {
             var response = client.Execute(request);
 
-            log.Debug(String.Format(
+            Logger.LogDebug(String.Format(
                     "Executed request to {0} with method {1}, got the following status: {2} and the body is {3}",
                     response.ResponseUri, request.Method, response.StatusDescription, response.Content));
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                log.Error("Your login/password are unknown to server");
+                Logger.LogError("Your login/password are unknown to server");
                 throw new UnauthorizedException("Your login/password are unknown to server");
             }
 
             if (((int)response.StatusCode) == 422)
             {
                 var errors = JsonConvert.DeserializeObject<ErrorsDAO>(response.Content).Errors;
-                log.Error(String.Format("API returned following errors: {0}", JsonConvert.SerializeObject(errors)));
+                Logger.LogError(String.Format("API returned following errors: {0}", JsonConvert.SerializeObject(errors)));
                 throw new ApiErrorsException("API returned errors, see Errors property", errors);
             }
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 var message = JsonConvert.DeserializeObject<IDictionary<string,string>>(response.Content)["message"];
-                log.Error(String.Format("Bad request: {0}", message));
+                Logger.LogError(String.Format("Bad request: {0}", message));
                 throw new ApiErrorsException(message, null);
             }
             return response;
@@ -125,7 +62,7 @@ namespace PromisePayDotNet.Implementations
         {
             if (string.IsNullOrEmpty(itemId))
             {
-                log.Error("id cannot be empty!");
+                Logger.LogError("id cannot be empty!");
                 throw new ArgumentException("id cannot be empty!");
             }
         }
@@ -134,14 +71,14 @@ namespace PromisePayDotNet.Implementations
         {
             if (limit < 0 || offset < 0)
             {
-                log.Error("limit and offset values should be nonnegative!");
+                Logger.LogError("limit and offset values should be nonnegative!");
                 throw new ArgumentException("limit and offset values should be nonnegative!");
             }
 
             if (limit > EntityListLimit)
             {
                 var message = String.Format("Max value for limit parameter is {0}!", EntityListLimit);
-                log.Error(message);
+                Logger.LogError(message);
                 throw new ArgumentException(message);
             }
         }

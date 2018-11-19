@@ -1,39 +1,42 @@
-#.NET SDK - PromisePay API
+# .NET SDK - PromisePay API
 
 [![Join the chat at https://gitter.im/PromisePay/promisepay-dotnet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PromisePay/promisepay-dotnet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![NuGet version](https://badge.fury.io/nu/PromisePay.API.NET.svg)](https://badge.fury.io/nu/PromisePay.API.NET) [![Build Status](https://travis-ci.org/PromisePay/promisepay-dotnet.svg)](https://travis-ci.org/PromisePay/promisepay-dotnet) [![Code Climate](https://codeclimate.com/github/PromisePay/promisepay-dotnet/badges/gpa.svg)](https://codeclimate.com/github/PromisePay/promisepay-dotnet) 
 
-#1. Installation
+# 1. Installation
 **NuGet:** Install PromisePay via NuGet package manager. The package name is '[PromisePay.API.NET](https://www.nuget.org/packages/PromisePay.API.NET)'.
 
 **Source:** Download latest sources from GitHub, add project into your solution and build it.
 
-#2. Configuration
+# 2. Configuration
 
 Before interacting with PromisePay API, you'll need to [create a prelive account](https://management.prelive.promisepay.com/#/sign-up/prelive) and get an API key.
 
 Once you have recorded your API token, configure the .NET package - see below.
 
-Add the below configuration to either the **App.config** or **Web.config** file, depending if it is a Windows, or Web application.
-```xml
-<?xml version="1.0" encoding="utf-8" ?>
-<configuration>
-  <configSections>
-    <sectionGroup name="PromisePay">
-      <section name="Settings" type="PromisePayDotNet.Settings.SettingsHandler,PromisePayDotNet" />
-    </sectionGroup>
-  </configSections>
-  <PromisePay>
-    <Settings>
-      <add key="ApiUrl" value="https://test.api.promisepay.com" />
-      <add key="Login" value="YOUR LOGIN" />
-      <add key="Password" value="YOUR PASSWORD" />
-      <add key="Key" value="YOUR API KEY" />
-    </Settings>
-  </PromisePay>
-</configuration>
+Add the below configuration (or equivalent) to your appsettings.json file.
+```javascript
+{
+	"AssemblyPay": {
+		"Url": "https://test.api.promisepay.com",
+		"Login": "YOUR_USERNAME",
+		"Password": "YOUR_ACCOUNT_KEY"
+	}
+}
 ```
+Then, in your Startup.cs, when you are setting up your Service Collection:
+```cs
+using Microsoft.Extensions.Configuration;
+...
+// FOR OLD STYLE REPOSITORIES
+serviceCollection.AddAssemblyPay(config.GetSection("AssemblyPay").Get<Settings>())
+// OR FOR NEW DYNAMIC REPOSITORIES
+serviceCollection.AddAssemblyPayDynamic(config.GetSection("AssemblyPay").Get<Settings>())
+```
+As .NET Core configuration is quite flexible, the configuration could be loaded a number of ways, and the above is meant as a sample only.
+
+
 **TLS 1.2**
 We require a minimum of TLS 1.2 on the client connection. 
 
@@ -44,33 +47,24 @@ We require a minimum of TLS 1.2 on the client connection.
 
 **Final configuration**
 
-PromisePay API package is build using Dependency Injection principle. It makes integration into your application easy and seamless.
+PromisePay API package is built using Dependency Injection. It makes integration into your application easy and seamless.
 
-You will need to setup your DI container to bind interfaces and implementations of the package together.
+By calling the `.AddAssemblyPay` or `.AddAssemblyPayDynamic` extension method, you are adding the relevant PromisePay services into your service configuration DI container.
 
-If you use **Unity** container, just invoke init method, as it's shown below:
 
-```cs
-	var container = new UnityContainer();
-	PromisePayDotNet.DI.InitUnityContainer.Init(container);
-```
-
-If you use another container, please copy initialization code from PromisePayDotNet\DI\InitUnityContainer.cs file and adjust it for your container of choice.
+If you use another container, please refer to the code in PromisePayDotNet\Extensions\ServiceCollectionExtensions.cs file to create your own implementation.
 You may use any lifecycle; implementations are stateless.
 
 
 Then, you can use repositories from package, by resolving interface with container, or passing dependencies into constructor.
 
-For details and example, please consider the following MSDN article:
-[https://msdn.microsoft.com/ru-ru/library/dn178463(v=pandp.30).aspx](http://)
-
-#3. Examples
-##Tokens
+# 3. Examples
+## Tokens
 ##### Example 1 - Request session token
 The below example shows the request for a marketplace configured to have the Item and User IDs generated automatically for them.
 
 ```cs
-var repo = container.Resolve<ITokenRepository>();
+var repo = serviceProvider.GetService<ITokenRepository>();
 var session_token = new Dictionary<string,object> {
 	{"current_user" , "seller"},
 	{"item_name" , "Test Item"},
@@ -87,11 +81,11 @@ var session_token = new Dictionary<string,object> {
 	{"payment_type_id" , "2"}
 };
 ```
-#####Example 2 - Request session token
+##### Example 2 - Request session token
 The below example shows the request for a marketplace that passes the Item and User IDs.
 
 ```cs
-var repo = container.Resolve<ITokenRepository>();
+var repo = serviceProvider.GetService<ITokenRepository>();
 var session_token = new Dictionary<string, object> {
 	{"current_user_id", "seller1234"},
 	{"item_name", "Test Item"},
@@ -114,40 +108,40 @@ var session_token = new Dictionary<string, object> {
 
 ##### Generate a card token
 ```cs
-	var repo = container.Resolve<ITokenRepository>();
+	var repo = serviceProvider.GetService<ITokenRepository>();
     var token = repo.GenerateCardToken("card", "064d6800-fff3-11e5-86aa-5e5517507c66");
 ```
 
-##Addresses
+## Addresses
 
-#####Get Address By Id
+##### Get Address By Id
 ```cs
-	var repo = container.Resolve<IAddressRepository>();
+	var repo = serviceProvider.GetService<IAddressRepository>();
     var resp = repo.GetAddressById("07ed45e5-bb9d-459f-bb7b-a02ecb38f443");
 ```
 
-##Batch transactions
+## Batch transactions
 
-#####List Batch Transactions
+##### List Batch Transactions
 ```cs
-	var repo = container.Resolve<IBatchTransactionRepository>();
+	var repo = serviceProvider.GetService<IBatchTransactionRepository>();
     var response = repo.List();
 	var transactions = JsonConvert.DeserializeObject<IList<IDictionary<string, object>>>(JsonConvert.SerializeObject(response["batch_transactions"]));
 ```
 
-#####Show Batch Transaction
+##### Show Batch Transaction
 ```cs
-	var repo = container.Resolve<IBatchTransactionRepository>();
+	var repo = serviceProvider.GetService<IBatchTransactionRepository>();
     const string id = "b1652611-9544-4244-a601-54c24cfa5e90";
     var response = repo.Show(id);
     var transaction = JsonConvert.DeserializeObject<IDictionary<string, object>>(JsonConvert.SerializeObject(response["batch_transactions"]));
 ```
 
-##Items
+## Items
 
-#####Create an item
+##### Create an item
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = Guid.NewGuid().ToString();
 var buyerId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 var sellerId = "fdf58725-96bd-4bf8-b5e6-9b61be20662e"; //some user created before
@@ -165,22 +159,22 @@ var item = new Dictionary<string,object>
 var createdItem = repo.CreateItem(item);
 ```
 
-#####Get an item
+##### Get an item
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "36aa17fb-5ea6-432b-8363-8074ae02603d";
 var gotItem = repo.GetItemById(id);
 ```
 
-#####Get a list of items
+##### Get a list of items
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var items = repo.ListItems();
 ```
 
-#####Update an item
+##### Update an item
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var buyerId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 var sellerId = "fdf58725-96bd-4bf8-b5e6-9b61be20662e"; //some user created before
@@ -199,99 +193,99 @@ var item = new Dictionary<string,object>
 var updatedItem = repo.UpdateItem(item);
 
 ```
-#####Delete an item
+##### Delete an item
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var result = repo.DeleteItem(id);
 ```
 
-#####List Item Batch Transactions
+##### List Item Batch Transactions
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var response = repo.ListBatchTransactions("7c269f52-2236-4aa5-899e-a2e3ecadbc3f");
 ```
 
-#####Get an item status
+##### Get an item status
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var status = repo.GetStatusForItem(id);
 ```
 
-#####Get an item's buyer
+##### Get an item's buyer
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var buyer = repo.GetBuyerForItem(id);
 ```
 
-#####Get an item's seller
+##### Get an item's seller
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var seller = repo.GetSellerForItem(id);
 ```
 
-#####Get an item's fees
+##### Get an item's fees
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var fees = repo.ListFeesForItem(id);
 ```
 
-#####Get an item's transactions
+##### Get an item's transactions
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var transactions = repo.ListTransactionsForItem(id);
 ```
-#####Get an item's wire details
+##### Get an item's wire details
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var wireDetails = repo.GetWireDetailsForItem(id);
 ```
 
-#####Get an item's BPAY details
+##### Get an item's BPAY details
 ```cs
-var repo = container.Resolve<IItemRepository>();
+var repo = serviceProvider.GetService<IItemRepository>();
 var id = "bb2323cf-4838-4fcb-a288-933d0307523d";
 var bPayDetails = repo.GetBPayDetailsForItem(id);
 ```
 
-##Direct debit authority
+## Direct debit authority
 
-#####Create Direct Debit Authority
+##### Create Direct Debit Authority
 ```cs
-var repo = container.Resolve<IDirectDebitAuthorityRepository>();
+var repo = serviceProvider.GetService<IDirectDebitAuthorityRepository>();
 var resp = repo.Create("9fda18e7-b1d3-4a83-830d-0cef0f62cd25", "100000");
 ```
 
-#####List Direct Debit Authorities
+##### List Direct Debit Authorities
 ```cs
-var repo = container.Resolve<IDirectDebitAuthorityRepository>();
+var repo = serviceProvider.GetService<IDirectDebitAuthorityRepository>();
 var resp = repo.List("9fda18e7-b1d3-4a83-830d-0cef0f62cd25");
 ```
 
-#####Show Direct Debit Authority
+##### Show Direct Debit Authority
 ```cs
-var repo = container.Resolve<IDirectDebitAuthorityRepository>();
+var repo = serviceProvider.GetService<IDirectDebitAuthorityRepository>();
 var resp = repo.Show("8f233e04-ffaa-4c9d-adf9-244853848e21");
 ```
 
-#####Delete Direct Debit Authority
+##### Delete Direct Debit Authority
 ```cs
-var repo = container.Resolve<IDirectDebitAuthorityRepository>();
+var repo = serviceProvider.GetService<IDirectDebitAuthorityRepository>();
 var resp = repo.Delete("9fda18e7-b1d3-4a83-830d-0cef0f62cd25");
 ```
 
-##Users
+## Users
 
-#####Create a user
+##### Create a user
 
 ```cs
-var repo = container.Resolve<IUserRepository>();
+var repo = serviceProvider.GetService<IUserRepository>();
 
 var id = Guid.NewGuid().ToString();
 var user = new Dictionary<string, object>
@@ -310,203 +304,203 @@ var user = new Dictionary<string, object>
 var createdUser = repo.CreateUser(user);	
 ```
 
-#####Get a user
+##### Get a user
 
 ```cs
-var repo = container.Resolve<IUserRepository>();
+var repo = serviceProvider.GetService<IUserRepository>();
 var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 
 var user = repo.GetUserById(id);
 ```
 
-#####Get a list of users
+##### Get a list of users
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var users = repo.ListUsers();
 ```
 
-#####Delete a User
+##### Delete a User
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	repo.DeleteUser(id);
 ```
 
-#####Get a user's card account
+##### Get a user's card account
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var account = repo.GetCardAccountForUser(id);	
 ```
 
-#####Get a user's PayPal account
+##### Get a user's PayPal account
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var account = repo.GetPayPalAccountForUser(id);
 ```
 
-#####Get a user's bank account
+##### Get a user's bank account
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var account = repo.GetBankAccountForUser(id);	
 ```
 
-#####Get a user's items
+##### Get a user's items
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var id = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var items = repo.ListItemsForUser(id);
 ```
 
-#####Set a user's disbursement account
+##### Set a user's disbursement account
 
 ```cs
-	var repo = container.Resolve<IUserRepository>();
+	var repo = serviceProvider.GetService<IUserRepository>();
 	var userId = "871f83ce-c55d-43ce-ba97-c65628d041a9";	
 	var accountId = "d077620f-f207-451c-abea-9ed430ea2cbf";	
 	bool result = repo.SetDisbursementAccount(userId, accountId);
 ```
 
-##Item Actions
-#####Make payment
+## Item Actions
+##### Make payment
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var accountId = "d077620f-f207-451c-abea-9ed430ea2cbf";
 	var item = repo.MakePayment(itemId, accountId);
 ```
 
-#####Request payment
+##### Request payment
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var item = repo.RequestPayment(itemId);
 ```
 
-#####Release payment
+##### Release payment
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var releaseAmount = 123;
 	var item = repo.ReleasePayment(itemId, releaseAmount);
 ```
 
-#####Request release
+##### Request release
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var releaseAmount = 123;
 	var item = repo.RequestRelease(itemId, releaseAmount);
 ```
 
-#####Cancel
+##### Cancel
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var item = repo.Cancel(itemId);
 ```
 
-#####Acknowledge wire
+##### Acknowledge wire
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var item = repo.AcknowledgeWire(itemId);
 ```
 
-#####Acknowledge PayPal
+##### Acknowledge PayPal
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var item = repo.AcknowledgePayPal(itemId);
 ```
 
-#####Revert wire
+##### Revert wire
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var item = repo.RevertWire(itemId);
 ```
 
-#####Request refund
+##### Request refund
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var refundAmount = 123;
 	var refundMessage = "refund message";
 	var item = repo.RequestRefund(itemId, refundAmount, refundMessage);
 ```
 
-#####Refund
+##### Refund
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "871f83ce-c55d-43ce-ba97-c65628d041a9";
 	var refundAmount = 123;
 	var refundMessage = "refund message";
 	var item = repo.Refund(itemId, refundAmount, refundMessage);
 ```
 
-#####Decline Refund
+##### Decline Refund
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
     var response = repo.DeclineRefund(itemId);
 ```
 
-#####Raise Dispute
+##### Raise Dispute
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
 	var userId = "5830def0-ffe8-11e5-86aa-5e5517507c66";
     var response = repo.RaiseDispute(itemId, userId);
 ```
 
-#####Request Dispute Resolution
+##### Request Dispute Resolution
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
     var response = repo.RequestDisputeResolution(itemId);
 ```
 
-#####Resolve Dispute
+##### Resolve Dispute
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
 	var response = repo.ResolveDispute(itemId);
 ```
 
-#####Escalate Dispute
+##### Escalate Dispute
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
     var response = repo.EscalateDispute(itemId);
 ```
 
-#####Send Tax Invoice
+##### Send Tax Invoice
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
     var response = repo.SendTaxInvoice(itemId);
 ```
 
-#####Request Tax Invoice
+##### Request Tax Invoice
 ```cs
-	var repo = container.Resolve<IItemRepository>();
+	var repo = serviceProvider.GetService<IItemRepository>();
 	var itemId = "100fd4a0-0538-11e6-b512-3e1d05defe78";
     var response = repo.RequestTaxInvoice(itemId);
 ```
 
-##Card Accounts
-#####Create a card account
+## Card Accounts
+##### Create a card account
 ```cs
-var repo = container.Resolve<ICardAccountRepository>();
+var repo = serviceProvider.GetService<ICardAccountRepository>();
 var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 var account = new Dictionary<string,object>
 {
@@ -526,32 +520,32 @@ var createdAccount = repo.CreateCardAccount(account);
 var id = createdAccount.Id;
 ```
 
-#####Get a card account
+##### Get a card account
 ```cs
-var repo = container.Resolve<ICardAccountRepository>();
+var repo = serviceProvider.GetService<ICardAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotAccount = repo.GetCardAccountById(accountId);
 ```
 
-#####Delete a card account
+##### Delete a card account
 ```cs
-var repo = container.Resolve<ICardAccountRepository>();
+var repo = serviceProvider.GetService<ICardAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var result = repo.DeleteCardAccount(accountId); //result should be true
 var gotAccount = repo.GetCardAccountById(accountId); //gotAccount.Active should be false
 ```
 
-#####Get a card account's users
+##### Get a card account's users
 ```cs
-var repo = container.Resolve<ICardAccountRepository>();
+var repo = serviceProvider.GetService<ICardAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotUser = repo.GetUserForCardAccount(accountId);
 ```
 
-##Bank Accounts
-#####Create a bank account
+## Bank Accounts
+##### Create a bank account
 ```cs
-var repo = container.Resolve<IBankAccountRepository>();
+var repo = serviceProvider.GetService<IBankAccountRepository>();
 var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 var account = new Dictionary<string,object>
 {
@@ -571,38 +565,38 @@ var account = new Dictionary<string,object>
 var createdAccount = repo.CreateBankAccount(account);
 ```
 
-#####Get a bank account
+##### Get a bank account
 ```cs
-var repo = container.Resolve<IBankAccountRepository>();
+var repo = serviceProvider.GetService<IBankAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotAccount = repo.GetBankAccountById(accountId);
 ```
 
-#####Delete a bank account
+##### Delete a bank account
 ```cs
-var repo = container.Resolve<IBankAccountRepository>();
+var repo = serviceProvider.GetService<IBankAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var result = repo.DeleteBankAccount(accountId); //result should be true
 var gotAccount = repo.GetBankAccountById(accountId); //gotAccount.Active should be false
 ```
 
-#####Get a bank account's users
+##### Get a bank account's users
 ```cs
-var repo = container.Resolve<IBankAccountRepository>();
+var repo = serviceProvider.GetService<IBankAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotUser = repo.GetUserForBankAccount(accountId);
 ```
 
-#####Validate routing number
+##### Validate routing number
 ```cs
-var repo = container.Resolve<IBankAccountRepository>();
+var repo = serviceProvider.GetService<IBankAccountRepository>();
 var resp = repo.ValidateRoutingNumber("122235821");
 ```
 
-##PayPal Accounts
-#####Create a PayPal account
+## PayPal Accounts
+##### Create a PayPal account
 ```cs
-var repo = container.Resolve<IPayPalAccountRepository>();
+var repo = serviceProvider.GetService<IPayPalAccountRepository>();
 var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 var account = new Dictionary<string,object>
 {
@@ -615,44 +609,44 @@ var account = new Dictionary<string,object>
 };
 var createdAccount = repo.CreatePayPalAccount(account);
 ```
-#####Get a PayPal account
+##### Get a PayPal account
 ```cs
-var repo = container.Resolve<IPayPalAccountRepository>();
+var repo = serviceProvider.GetService<IPayPalAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotAccount = repo.GetPayPalAccountById(accountId);
 ```
-#####Delete a PayPal account
+##### Delete a PayPal account
 ```cs
-var repo = container.Resolve<IPayPalAccountRepository>();
+var repo = serviceProvider.GetService<IPayPalAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var result = repo.DeletePayPalAccount(accountId); //result should be true
 var gotAccount = repo.GetPayPalAccountById(accountId); //gotAccount.Active should be false
 ```
 
-#####Get a PayPal account's users
+##### Get a PayPal account's users
 ```cs
-var repo = container.Resolve<IPayPalAccountRepository>();
+var repo = serviceProvider.GetService<IPayPalAccountRepository>();
 var accountId = "14a74a3c-8358-4c99-bcf2-4c6ed7454747";
 var gotUser = repo.GetUserForPayPalAccount(accountId);
 ```
 
-##Fees
-#####Get a list of fees
+## Fees
+##### Get a list of fees
 ```cs
-var repo = container.Resolve<IFeeRepository>();
+var repo = serviceProvider.GetService<IFeeRepository>();
 var fees = repo.ListFees();
 ```
 
-#####Get a fee
+##### Get a fee
 ```cs
-var repo = container.Resolve<IFeeRepository>();
+var repo = serviceProvider.GetService<IFeeRepository>();
 var id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
 var fee = repo.GetFeeById(id);
 ```
 
-#####Create a fee
+##### Create a fee
 ```cs
-var repo = container.Resolve<IFeeRepository>();
+var repo = serviceProvider.GetService<IFeeRepository>();
 var feeId = Guid.NewGuid().ToString();
 var createdFee = repo.CreateFee(new Dictionary<string,object>
 {
@@ -667,38 +661,38 @@ var createdFee = repo.CreateFee(new Dictionary<string,object>
 });
 ```
 
-##Transactions
-#####Get a list of transactions
+## Transactions
+##### Get a list of transactions
 ```cs
-var repo = container.Resolve<ITransactionRepository>();
+var repo = serviceProvider.GetService<ITransactionRepository>();
 var transactions = repo.ListTransactions();
 ```
 
-#####Get a transactions
+##### Get a transactions
 ```cs
-var repo = container.Resolve<ITransactionRepository>();
+var repo = serviceProvider.GetService<ITransactionRepository>();
 var id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
 var transaction = repo.GetTransaction(id);
 ```
 
-#####Get a transaction's users
+##### Get a transaction's users
 ```cs
-var repo = container.Resolve<ITransactionRepository>();
+var repo = serviceProvider.GetService<ITransactionRepository>();
 var id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
 var user = repo.GetUserForTransaction(id);
 ```
 
-#####Get a transaction's fees
+##### Get a transaction's fees
 ```cs
-var repo = container.Resolve<ITransactionRepository>();
+var repo = serviceProvider.GetService<ITransactionRepository>();
 var id = "79116c9f-d750-4faa-85c7-b7da36f23b38";
 var fee = repo.GetFeeForTransaction(id);
 ```
 
-##Charges
-#####Create charge
+## Charges
+##### Create charge
 ```cs
-var repo = container.Resolve<IChargeRepository>();
+var repo = serviceProvider.GetService<IChargeRepository>();
 var charge = new Dictionary<string, object>
 {
     {"name" , "Charge for Delivery"},
@@ -718,91 +712,91 @@ var charge = new Dictionary<string, object>
 var response = repo.CreateCharge(charge);
 ```
 
-#####List charges
+##### List charges
 ```cs
-var repo = container.Resolve<IChargeRepository>();
+var repo = serviceProvider.GetService<IChargeRepository>();
 var charges = repo.ListCharges();
 ```
 
-#####Show charge
+##### Show charge
 ```cs
-var repo = container.Resolve<IChargeRepository>();
+var repo = serviceProvider.GetService<IChargeRepository>();
 var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
 var response = repo.ShowCharge(id);
 var charge = JsonConvert.DeserializeObject<IDictionary<string, object>>(JsonConvert.SerializeObject(response["charges"]));
 ```
 
-#####Show buyer for a charge
+##### Show buyer for a charge
 ```cs
-var repo = container.Resolve<IChargeRepository>();
+var repo = serviceProvider.GetService<IChargeRepository>();
 var id = "cb7eafc1-571c-425c-9adc-f56cb585cd68";
 var response = repo.ShowChargeBuyer(id);
 var buyer = JsonConvert.DeserializeObject<IDictionary<string, object>>(JsonConvert.SerializeObject(response["users"]));
 ```
 
-#####Show charge status
+##### Show charge status
 ```cs
-var repo = container.Resolve<IChargeRepository>();
+var repo = serviceProvider.GetService<IChargeRepository>();
 var response = repo.ShowChargeStatus(id);
 var charge = JsonConvert.DeserializeObject<IDictionary<string, object>>(JsonConvert.SerializeObject(response["charges"]));
 ```
 
-##Feature Configuration
-#####Create
+## Feature Configuration
+##### Create
 ```cs
-var repo = container.Resolve<IConfigurationRepository>();
+var repo = serviceProvider.GetService<IConfigurationRepository>();
 var response = repo.Create(new Dictionary<string,object> {{"name","test"}});
 ...
 ```
-#####List
+##### List
 ```cs
-var repo = container.Resolve<IConfigurationRepository>();
+var repo = serviceProvider.GetService<IConfigurationRepository>();
 var response = repo.List();
 ...
 ```
-#####Show
+##### Show
 ```cs
-var repo = container.Resolve<IConfigurationRepository>();
+var repo = serviceProvider.GetService<IConfigurationRepository>();
 var response = repo.Show("ca321b3f-db87-4d75-ba05-531c7f1bb515");
 ...
 ```
-#####Update
+##### Update
 ```cs
-var repo = container.Resolve<IConfigurationRepository>();
+var repo = serviceProvider.GetService<IConfigurationRepository>();
 var response = repo.Update(new Dictionary<string,object> {{"id",""ca321b3f-db87-4d75-ba05-531c7f1bb515""}, {"name","test"}});
 ...
 ```
-#####Delete
+##### Delete
 ```cs
-var repo = container.Resolve<IConfigurationRepository>();
+var repo = serviceProvider.GetService<IConfigurationRepository>();
 var response = repo.Delete("ca321b3f-db87-4d75-ba05-531c7f1bb515");
 ...
 ```
 
-##Restrictions
-#####List
+## Restrictions
+##### List
 ```cs
-var repo = container.Resolve<IRestrictionRepository>();
+var repo = serviceProvider.GetService<IRestrictionRepository>();
 var response = repo.List();
 ...
 ```
-#####Show
+##### Show
 ```cs
-var repo = container.Resolve<IRestrictionRepository>();
+var repo = serviceProvider.GetService<IRestrictionRepository>();
 var response = repo.Show("ca321b3f-db87-4d75-ba05-531c7f1bb515");
 ...
 ```
 
-##Tools
-#####Health check
+## Tools
+##### Health check
 ```cs
-var repo = container.Resolve<IToolRepository>();
+var repo = serviceProvider.GetService<IToolRepository>();
 var response = repo.HealthCheck();
 if (response["status"] == 'healthy') 
 ...
 ```
 
-#4. Contributing
+# 4. Contributing
 	1. Fork it ( https://github.com/PromisePay/promisepay-dotnet/fork )
 	2. Create your feature branch (`git checkout -b my-new-feature`)
 	3. Commit your changes (`git commit -am 'Add some feature'`)

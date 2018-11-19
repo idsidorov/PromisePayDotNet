@@ -22,10 +22,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreateCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/card_account_create.json");
+            var content = File.ReadAllText("./Fixtures/card_account_create.json");
 
             var client = GetMockClient(content);
-            var repo = new CardAccountRepository(client.Object);
+            var repo = new CardAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<CardAccountRepository>().Object);
 
             const string userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
             var account = new CardAccount
@@ -55,10 +55,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void GetCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/card_account_get_by_id.json");
+            var content = File.ReadAllText("./Fixtures/card_account_get_by_id.json");
 
             var client = GetMockClient(content);
-            var repo = new CardAccountRepository(client.Object);
+            var repo = new CardAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<CardAccountRepository>().Object);
             var gotAccount = repo.GetCardAccountById("25d34744-8ef0-46a4-8b18-2a8322933cd1");
             client.VerifyAll();
             Assert.AreEqual("25d34744-8ef0-46a4-8b18-2a8322933cd1", gotAccount.Id);
@@ -68,17 +68,17 @@ namespace PromisePayDotNet.Tests
         public void GetCardAccountEmptyId()
         {
             var client = GetMockClient("");
-            var repo = new CardAccountRepository(client.Object);
+            var repo = new CardAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<CardAccountRepository>().Object);
             Assert.Throws<ArgumentException>(() => repo.GetCardAccountById(string.Empty));
         }
 
         [Test]
         public void GetUserForCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/card_account_get_users.json");
+            var content = File.ReadAllText("./Fixtures/card_account_get_users.json");
 
             var client = GetMockClient(content);
-            var repo = new CardAccountRepository(client.Object);
+            var repo = new CardAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<CardAccountRepository>().Object);
             var gotUser = repo.GetUserForCardAccount("25d34744-8ef0-46a4-8b18-2a8322933cd1");
 
             client.VerifyAll();
@@ -90,10 +90,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void DeleteCardAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/card_account_delete.json");
+            var content = File.ReadAllText("./Fixtures/card_account_delete.json");
 
             var client = GetMockClient(content);
-            var repo = new CardAccountRepository(client.Object);
+            var repo = new CardAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<CardAccountRepository>().Object);
             const string id = "25d34744-8ef0-46a4-8b18-2a8322933cd1";
 
             var result = repo.DeleteCardAccount(id);

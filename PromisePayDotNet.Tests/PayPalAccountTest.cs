@@ -23,9 +23,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreatePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/paypal_account_create.json");
+            var content = File.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = new PayPalAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<PayPalAccountRepository>().Object);
 
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
             var account = new PayPalAccount
@@ -50,9 +50,9 @@ namespace PromisePayDotNet.Tests
         public void GetPayPalAccountSuccessfully()
         {
             var id = "cd2ab053-25e5-491a-a5ec-0c32dbe76efa";
-            var content = File.ReadAllText("../../Fixtures/paypal_account_create.json");
+            var content = File.ReadAllText("./Fixtures/paypal_account_create.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = new PayPalAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<PayPalAccountRepository>().Object);
 
             var gotAccount = repo.GetPayPalAccountById(id);
 
@@ -64,7 +64,7 @@ namespace PromisePayDotNet.Tests
         {
             var client = GetMockClient("");
 
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = new PayPalAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<PayPalAccountRepository>().Object);
 
             Assert.Throws<ArgumentException>(()=>repo.GetPayPalAccountById(string.Empty));
         }
@@ -74,9 +74,9 @@ namespace PromisePayDotNet.Tests
         {
             var id = "3a780d4a-5de0-409c-9587-080930ddea3c";
 
-            var content = File.ReadAllText("../../Fixtures/paypal_account_get_users.json");
+            var content = File.ReadAllText("./Fixtures/paypal_account_get_users.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = new PayPalAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<PayPalAccountRepository>().Object);
 
             var userId = "ec9bf096-c505-4bef-87f6-18822b9dbf2c"; //some user created before
 
@@ -90,9 +90,9 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void DeletePayPalAccountSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/paypal_account_delete.json");
+            var content = File.ReadAllText("./Fixtures/paypal_account_delete.json");
             var client = GetMockClient(content);
-            var repo = new PayPalAccountRepository(client.Object);
+            var repo = new PayPalAccountRepository(client.Object, GetMockSettings().Object, GetMockLogger<PayPalAccountRepository>().Object);
 
             var result = repo.DeletePayPalAccount("cd2ab053-25e5-491a-a5ec-0c32dbe76efa");
             Assert.IsTrue(result);

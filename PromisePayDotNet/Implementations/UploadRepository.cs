@@ -5,16 +5,16 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
     public class UploadRepository : AbstractRepository, IUploadRepository
     {
-        public UploadRepository(IRestClient client) : base(client)
+        public UploadRepository(IRestClient client, ISettings settings, ILogger<UploadRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IList<Upload> ListUploads()
         {

@@ -22,10 +22,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void ListCompaniesSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_list.json");
+            var content = File.ReadAllText("./Fixtures/companies_list.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = new CompanyRepository(client.Object, GetMockSettings().Object, GetMockLogger<CompanyRepository>().Object);
             var resp = repo.ListCompanies();
             client.VerifyAll();
             Assert.IsNotNull(resp);
@@ -36,10 +36,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void GetCompanyByIdSuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_get_by_id.json");
+            var content = File.ReadAllText("./Fixtures/companies_get_by_id.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = new CompanyRepository(client.Object, GetMockSettings().Object, GetMockLogger<CompanyRepository>().Object);
             var resp = repo.GetCompanyById("e466dfb4-f05c-4c7f-92a3-09a0a28c7af5");
             client.VerifyAll();
             var first = resp.Values.First();
@@ -52,10 +52,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void CreateCompanySuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_create.json");
+            var content = File.ReadAllText("./Fixtures/companies_create.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = new CompanyRepository(client.Object, GetMockSettings().Object, GetMockLogger<CompanyRepository>().Object);
             var resp = repo.CreateCompany(new Dictionary<string, object>
             { { "legal_name", "Test company #1" },
                 { "name", "Test company #1" },
@@ -80,10 +80,10 @@ namespace PromisePayDotNet.Tests
         [Test]
         public void EditCompanySuccessfully()
         {
-            var content = File.ReadAllText("../../Fixtures/companies_edit.json");
+            var content = File.ReadAllText("./Fixtures/companies_edit.json");
 
             var client = GetMockClient(content);
-            var repo = new CompanyRepository(client.Object);
+            var repo = new CompanyRepository(client.Object, GetMockSettings().Object, GetMockLogger<CompanyRepository>().Object);
             var resp = repo.EditCompany(new Dictionary<string,object>
             {
                 {"id" , "739dcfc5-adf0-4a00-b639-b4e05922994d"},

@@ -5,16 +5,16 @@ using PromisePayDotNet.Interfaces;
 using RestSharp;
 using System.Collections.Generic;
 using System.Linq;
+using PromisePayDotNet.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace PromisePayDotNet.Implementations
 {
     public class CompanyRepository : AbstractRepository, ICompanyRepository
     {
-        public CompanyRepository(IRestClient client) : base(client)
+        public CompanyRepository(IRestClient client, ISettings settings, ILogger<CompanyRepository> logger) : base(client, settings, logger)
         {
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IEnumerable<Company> ListCompanies()
         {
